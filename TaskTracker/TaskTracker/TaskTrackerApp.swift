@@ -10,7 +10,9 @@ import SwiftUI
 struct TaskTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            TaskView()
+            NavigationView {
+                TaskView()
+            }
         }
     }
 }

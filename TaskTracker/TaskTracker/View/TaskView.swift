@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  TaskView.swift
 //  
 //  Created by Manajit Halder on 09/10/23 using Swift 5.0 on MacOS 13.4
 //  
@@ -30,60 +30,56 @@ struct TaskView: View {
     }
 
     var body: some View {
-        
-        NavigationView {
-            VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 10) {
                 
-                Picker("Select Category", selection: $selectedCategory) {
-                    ForEach(categories, id: \.self) { category in
-                        Text(category)
-                            .foregroundColor(.black)
-                    }
+            Picker("Select Category", selection: $selectedCategory) {
+                ForEach(categories, id: \.self) { category in
+                    Text(category)
+                        .foregroundColor(.black)
                 }
-                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
-                
-                ScrollView {
-                    ForEach(filteredTasks, id: \.self) { task in
-                        TaskListItemView(title: task.title)
-                            .padding()
-                    }
+            }
+            .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
+            
+            ScrollView {
+                ForEach(filteredTasks, id: \.self) { task in
+                    TaskListItemView(title: task.title)
+                        .padding()
                 }
-                
+            }
+            
+            Spacer()
+            
+            HStack {
                 Spacer()
                 
-                HStack {
-                    Spacer()
-                    
-                    ZStack {
-                        Circle() // Outer circle (larger)
-                            .padding(.bottom, 20)
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(.white)
-                        
-                        Button(action: {
-                            isAddingTask.toggle()
-                        }) {
-                            NavigationLink(destination: TaskAddView()) {
-                                Image(systemName: "plus")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .frame(width: 20, height: 20)
-                        .padding()
-                        .background(Color.yellow)
-                        .clipShape(Circle())
+                ZStack {
+                    Circle() // Outer circle (larger)
                         .padding(.bottom, 20)
-                    }
-                    Spacer()
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(.white)
                     
+                    Button(action: {
+                        isAddingTask.toggle()
+                    }) {
+                        NavigationLink(destination: TaskAddView()) {
+                            Image(systemName: "plus")
+                                .frame(width: 30, height: 30)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .frame(width: 20, height: 20)
+                    .padding()
+                    .background(Color.yellow)
+                    .clipShape(Circle())
+                    .padding(.bottom, 20)
                 }
-                .frame(maxHeight: 40)
-                .background(.bar)
+                Spacer()
+                
             }
-            .navigationBarHidden(true)
+            .frame(maxHeight: 40)
+            .background(.bar)
         }
+        .navigationBarHidden(true)
     }
 }
 
@@ -95,32 +91,40 @@ struct TaskAddView: View {
 }
 
 struct TaskListItemView: View {
-     var title: String
+    @State var isEditingTask = false
+    var title: String
     
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 20) {
-                Text(title)
-                    .font(.custom("Cochin", size: 18))
-                    .fontDesign(.rounded)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(20)
-                    .foregroundColor(.black)
-                    .background(.white)
+            NavigationLink(destination: EditTaskView(title: title)) {
+                VStack(spacing: 20) {
+                    Button {
+                        isEditingTask.toggle()
+                    } label: {
+                        NavigationLink(destination: EditTaskView(title: title)) {
+                            Text(title)
+                                .font(.custom("Cochin", size: 18))
+                                .fontDesign(.rounded)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(20)
+                                .foregroundColor(.black)
+                                .background(.pink)
+                        }
+                    }
+                }
+                .frame(width: geometry.size.width * 0.9, height: 80)
+                .background(.green)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .circular)
+                        .stroke(Color.black.opacity(0.8), lineWidth: 2)
+                )
+                .background(.blue)
+                
             }
-            .frame(width: geometry.size.width * 0.9, height: 80)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .circular)
-                    .stroke(Color.black.opacity(0.5), lineWidth: 2)
-            )
+            .background(.yellow)
             .padding([.leading, .trailing], 10)
         }
-        .padding(.bottom, 40)
-    }
-    
-    private func calculateMinHeight(for text: String, in size: CGSize) -> CGFloat {
-        let textHeight = text.height(withConstrainedWidth: size.width * 0.9, font: UIFont(name: "Cochin", size: 18) ?? UIFont.systemFont(ofSize: 18))
-        return max(textHeight + 20, 30) // Ensure a minimum height of 30
+        .padding(.bottom, 50)
     }
     
 }
@@ -131,18 +135,12 @@ struct TaskView_Previews: PreviewProvider {
     }
 }
 
-
-extension String {
-    func height(withConstrainedWidth width: CGFloat, font: UIFont) -> CGFloat {
-        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let boundingBox = self.boundingRect(
-            with: constraintRect,
-            options: .usesLineFragmentOrigin,
-            attributes: [NSAttributedString.Key.font: font],
-            context: nil
-        )
-
-        return ceil(boundingBox.height)
+struct EditTaskView: View {
+    var title: String
+    
+    var body: some View {
+        Text(title)
     }
 }
+
 

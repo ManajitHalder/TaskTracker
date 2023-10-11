@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct TaskView: View {
-    @StateObject private var taskList = TaskViewModel()
+    @ObservedObject private var taskList = TaskViewModel()
     @State private var selectedCategory = "All"
     @State private var isDrawerOpen = false
     
@@ -15,6 +15,8 @@ struct TaskView: View {
 
     var categories: [String] {
         var uniqueCategories = Set<String>()
+        print(taskList.tasks.count)
+        
         taskList.tasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
@@ -61,7 +63,7 @@ struct TaskView: View {
                     Button(action: {
                         isAddingTask.toggle()
                     }) {
-                        NavigationLink(destination: TaskAddView()) {
+                        NavigationLink(destination: TaskAddView(taskList: taskList)) {
                             Image(systemName: "plus")
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.white)
@@ -83,12 +85,7 @@ struct TaskView: View {
     }
 }
 
-struct TaskAddView: View {
-    var body: some View {
-        Text("Add Task View")
-            .background(Color.pink) // Add background color if needed
-    }
-}
+
 
 struct TaskListItemView: View {
     @State var isEditingTask = false
@@ -108,14 +105,15 @@ struct TaskListItemView: View {
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(20)
                                 .foregroundColor(.black)
-                                .background(.pink)
+                                .background(.blue)
+                                .padding()
                         }
                     }
                 }
-                .frame(width: geometry.size.width * 0.9, height: 80)
+                .frame(width: geometry.size.width * 0.9, height: 120)
                 .background(.green)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 10, style: .circular)
+                    RoundedRectangle(cornerRadius: 30, style: .circular)
                         .stroke(Color.black.opacity(0.8), lineWidth: 2)
                 )
                 .background(.blue)
@@ -124,7 +122,7 @@ struct TaskListItemView: View {
             .background(.yellow)
             .padding([.leading, .trailing], 10)
         }
-        .padding(.bottom, 50)
+        .padding(.bottom, 100)
     }
     
 }

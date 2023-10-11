@@ -9,7 +9,12 @@ import Foundation
 struct Task: Identifiable, Hashable {
     var id = UUID()
     var title: String
-    var category: String
+    var description: String
+    var priority: String = ""
+    var dueDate: Date
+    var category: String = ""
+    var status: String = ""
+    var updates: [String] = []
 }
 
 

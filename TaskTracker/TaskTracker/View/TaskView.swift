@@ -68,6 +68,7 @@ struct TaskView: View {
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.white)
                         }
+                        .navigationBarTitle("Task Tracker", displayMode: .inline)
                     }
                     .frame(width: 20, height: 20)
                     .padding()
@@ -81,7 +82,6 @@ struct TaskView: View {
             .frame(maxHeight: 40)
             .background(.bar)
         }
-        .navigationBarHidden(true)
     }
 }
 

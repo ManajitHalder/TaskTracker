@@ -7,46 +7,61 @@
 import SwiftUI
 
 struct TaskView: View {
-    @ObservedObject private var taskList = TaskViewModel()
-    @State private var selectedCategory = "All"
-    @State private var isDrawerOpen = false
+    @StateObject private var taskViewModel = TaskViewModel()
     
+    @State private var selectedCategory = "All Tasks"
+    @State private var isDrawerOpen = false
     @State private var isAddingTask = false
-
+    @State private var alternateColor = false
+    
+    @State private var searchText: String = ""
+    @State private var isSearching: Bool = false
+    @FocusState private var isSearchFieldFocussed: Bool
+    
+    @State private var taskFilter: String = "category"
+    
     var categories: [String] {
         var uniqueCategories = Set<String>()
-        print(taskList.tasks.count)
         
-        taskList.tasks.forEach { task in
+        taskViewModel.tasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
-        return Array(uniqueCategories) + ["All"]
+        
+        return Array(uniqueCategories) + ["All Tasks"]
     }
 
     var filteredTasks: [Task] {
-        if selectedCategory == "All" {
-            return taskList.tasks
+        if selectedCategory == "All Tasks" {
+            return taskViewModel.tasks
         } else {
-            return taskList.tasks.filter { $0.category == selectedCategory }
+            return taskViewModel.tasks.filter { $0.category == selectedCategory }
         }
     }
-
+    
     var body: some View {
+        
         VStack(alignment: .leading, spacing: 10) {
                 
-            Picker("Select Category", selection: $selectedCategory) {
-                ForEach(categories, id: \.self) { category in
-                    Text(category)
-                        .foregroundColor(.black)
+            HStack {
+                Text("Filter by \(taskFilter):")
+                    .padding(.leading, 10)
+                
+                Picker("Select Category", selection: $selectedCategory) {
+                    ForEach(categories, id: \.self) { category in
+                        Text(category)
+                            .foregroundColor(.black)
+                    }
                 }
+                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
             }
-            .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
             
-            ScrollView {
+            List {
                 ForEach(filteredTasks, id: \.self) { task in
-                    TaskListItemView(title: task.title)
-                        .padding()
+                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel)) {
+                        TaskListItemView(task: task)
+                    }
                 }
+                .listRowBackground(getListRowColor(alternateColor))
             }
             
             Spacer()
@@ -54,6 +69,7 @@ struct TaskView: View {
             HStack {
                 Spacer()
                 
+                // Plus Circle for adding Tasks
                 ZStack {
                     Circle() // Outer circle (larger)
                         .padding(.bottom, 20)
@@ -63,12 +79,55 @@ struct TaskView: View {
                     Button(action: {
                         isAddingTask.toggle()
                     }) {
-                        NavigationLink(destination: TaskAddView(taskList: taskList)) {
+                        NavigationLink(destination: TaskAddView(taskViewModel: taskViewModel)) {
                             Image(systemName: "plus")
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.white)
                         }
-                        .navigationBarTitle("Task Tracker", displayMode: .inline)
+//                        .navigationBarTitle("Task Tracker", displayMode: .inline)
+                        .navigationTitle("")
+                        .navigationBarItems(
+                            leading: HStack {
+                                Button(action: {
+                                    withAnimation {
+                                        isSearching = true
+                                        isSearchFieldFocussed = true
+                                        searchText = ""
+                                    }
+                                }) {
+                                    Image(systemName: "magnifyingglass")
+                                        .font(.custom("Cochin", size: 15))
+                                }
+                                if isSearching {
+                                    TextField("Search Task", text: $searchText)
+//                                        .background(Color(.systemGray5))
+                                        .cornerRadius(8)
+                                        .frame(height: 30)
+                                        .focused($isSearchFieldFocussed)
+                                }
+                            },
+                            trailing: HStack {
+                                if isSearching {
+                                    Button {
+                                        withAnimation {
+                                            isSearching = false
+                                            isSearchFieldFocussed = false
+                                            searchText = ""
+                                        }
+                                    } label: {
+                                        Image(systemName: "xmark")
+                                            .font(.custom("Cochin", size: 15))
+                                    }
+                                } else {
+                                    Button(action: {
+                                        // Handle the search action
+                                    }) {
+                                        Image(systemName: "gearshape")
+                                            .font(.custom("Cochin", size: 15))
+                                    }
+                                }
+                            }
+                        )
                     }
                     .frame(width: 20, height: 20)
                     .padding()
@@ -83,48 +142,10 @@ struct TaskView: View {
             .background(.bar)
         }
     }
-}
-
-
-
-struct TaskListItemView: View {
-    @State var isEditingTask = false
-    var title: String
     
-    var body: some View {
-        GeometryReader { geometry in
-            NavigationLink(destination: EditTaskView(title: title)) {
-                VStack(spacing: 20) {
-                    Button {
-                        isEditingTask.toggle()
-                    } label: {
-                        NavigationLink(destination: EditTaskView(title: title)) {
-                            Text(title)
-                                .font(.custom("Cochin", size: 18))
-                                .fontDesign(.rounded)
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(20)
-                                .foregroundColor(.black)
-                                .background(.blue)
-                                .padding()
-                        }
-                    }
-                }
-                .frame(width: geometry.size.width * 0.9, height: 120)
-                .background(.green)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 30, style: .circular)
-                        .stroke(Color.black.opacity(0.8), lineWidth: 2)
-                )
-                .background(.blue)
-                
-            }
-            .background(.yellow)
-            .padding([.leading, .trailing], 10)
-        }
-        .padding(.bottom, 100)
+    func getListRowColor(_ color: Bool) -> Color {
+        return Color.black.opacity(0.03)
     }
-    
 }
 
 struct TaskView_Previews: PreviewProvider {
@@ -132,13 +153,4 @@ struct TaskView_Previews: PreviewProvider {
         TaskView()
     }
 }
-
-struct EditTaskView: View {
-    var title: String
-    
-    var body: some View {
-        Text(title)
-    }
-}
-
 

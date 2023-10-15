@@ -6,15 +6,20 @@
 
 import Foundation
 
+struct Update: Identifiable, Hashable {
+    var id = UUID()
+    var text: String
+}
+
 struct Task: Identifiable, Hashable {
     var id = UUID()
     var title: String
     var description: String
-    var priority: String = ""
-    var dueDate: Date
     var category: String = ""
+    var priority: String = ""
     var status: String = ""
-    var updates: [String] = []
+    var dueDate: Date
+    var updates: [Update] = []
 }
 
 

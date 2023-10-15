@@ -7,13 +7,14 @@
 import SwiftUI
 
 struct TaskAddView: View {
-    @ObservedObject var taskList: TaskViewModel
+    @ObservedObject var taskViewModel: TaskViewModel
     @Environment(\.presentationMode) var presentationMode
     
     @State private var title: String = ""
     @State private var description: String = ""
     @State private var category: String = "Personal"
     @State private var priority: String = "High"
+    @State private var status: String = "Not Started"
     @State private var dueDate: Date = Date()
     
     @FocusState private var focusedField: Int? // To autofocus the mouse in the first text field.
@@ -24,6 +25,7 @@ struct TaskAddView: View {
         description = ""
         category = "Personal"
         priority = "High"
+        status = "Not Started"
         dueDate = Date()
     }
     
@@ -69,13 +71,23 @@ struct TaskAddView: View {
                 }
             }
             
+            Section(header: Text("Task Status")) {
+                Picker("Status", selection: $status) {
+                    Text("Not Started").tag("Not Started")
+                    Text("In Progress").tag("In Progress")
+                    Text("Completed").tag("Completed")
+                    Text("Cancelled").tag("Cancelled")
+                    Text("Deferred").tag("Deferred")
+                    Text("Overdue").tag("Overdue")
+                }
+            }
             Section(header: Text("Task Due Date")) {
                 DatePicker(
                     "Due Date",
                     selection: $dueDate,
                     displayedComponents: .date
                 )
-                .datePickerStyle(WheelDatePickerStyle())
+                .datePickerStyle(.compact)
             }
             .frame(maxHeight: 80)
         }
@@ -102,15 +114,14 @@ struct TaskAddView: View {
                     
                     let newTask = Task(title: title,
                                        description: description,
+                                       category: category,
                                        priority: priority,
-                                       dueDate: dueDate,
-                                       category: category
+                                       status: status,
+                                       dueDate: dueDate
                     )
                     
                     // Add the newTask to taskList
                     if title.isEmpty && description.isEmpty {
-                        isFieldsEmptyAlertPresented = true
-                       
                         /*
                          dismiss the keyboard before presenting the alert to avoid layout constraint of the system input assistant view error.
                         */
@@ -119,8 +130,9 @@ struct TaskAddView: View {
                             to: nil,
                             from: nil,
                             for: nil)
+                        isFieldsEmptyAlertPresented = true
                     } else {
-                        taskList.addTask(newTask)
+                        taskViewModel.addTask(newTask)
                     }
                     // Reset the input fields to defaults
                     resetInputFields()
@@ -148,6 +160,6 @@ struct TaskAddView: View {
 
 struct TaskAddView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskAddView(taskList: TaskViewModel())
+        TaskAddView(taskViewModel: TaskViewModel())
     }
 }

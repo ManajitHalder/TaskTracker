@@ -43,23 +43,21 @@ struct TaskView: View {
         VStack(alignment: .leading, spacing: 10) {
                 
             HStack {
-                Text("Filter by \(taskFilter):")
-                    .padding(.leading, 10)
-                
                 Picker("Select Category", selection: $selectedCategory) {
                     ForEach(categories, id: \.self) { category in
-                        Text(category)
-                            .foregroundColor(.black)
+                        Text(category).tag(category)
                     }
                 }
                 .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
             }
+            .padding(.leading, 20)
             
             List {
                 ForEach(filteredTasks, id: \.self) { task in
-                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel)) {
+                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: task)) {
                         TaskListItemView(task: task)
                     }
+//                    .navigationTitle(task.title)
                 }
                 .listRowBackground(getListRowColor(alternateColor))
             }

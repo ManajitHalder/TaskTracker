@@ -56,6 +56,7 @@ struct TaskAddView: View {
                     Text("Entertainment").tag("Entertainment")
                     Text("Shopping").tag("Shopping")
                     Text("Hobby").tag("Hobby")
+                    Text("Wishlist").tag("Wishlist")
                     Text("Household").tag("Household")
                 }
             }
@@ -121,7 +122,7 @@ struct TaskAddView: View {
                     )
                     
                     // Add the newTask to taskList
-                    if title.isEmpty && description.isEmpty {
+                    if title.isEmpty || description.isEmpty {
                         /*
                          dismiss the keyboard before presenting the alert to avoid layout constraint of the system input assistant view error.
                         */

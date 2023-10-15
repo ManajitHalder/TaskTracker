@@ -17,22 +17,22 @@ struct TaskListItemView: View {
                     .padding(.bottom, 5)
                     .foregroundColor(.primary)
                 
-                Text("Priority: \t\(task.priority)")
+                Text("Priority: \t\t\(task.priority)")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
                 
-                Text("Status: \(task.status)")
+                Text("Status: \t\t\(task.status)")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
                 
-                Text("Category: \(task.category)")
+                Text("Category: \t\(task.category)")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
                 
-                Text("Due Date: \(formattedDate(task.dueDate))")
+                Text("Due Date: \t\(formattedDate(task.dueDate))")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
@@ -44,9 +44,6 @@ struct TaskListItemView: View {
     func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
-//        formatter.timeStyle = .short
-        formatter.timeZone = .current
-        formatter.calendar = .autoupdatingCurrent
         
         return formatter.string(from: date)
     }

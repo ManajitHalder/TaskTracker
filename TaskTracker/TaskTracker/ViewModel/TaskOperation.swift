@@ -10,7 +10,7 @@ import Foundation
 class TaskViewModel: ObservableObject {
     
     @Published var tasks: [Task] = [
-        Task(title: "Task 1", description: ": Start your first project Task Trakcer to track daily tasks with different criteria like task category, priority, task notification, ...", category: "Personal", dueDate: Date()),
+        Task(title: "Task 1", description: ": Start your first project Task Trakcer to track daily tasks with different criteria like task category, priority, task notification, ...", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
 //        Task(title: "Task 2", description: "", category: "Personal"),
 //        Task(title: "Task 3", description: "", category: "Personal"),
 //        Task(title: "Task 4", description: "", category: "Work"),
@@ -21,7 +21,7 @@ class TaskViewModel: ObservableObject {
         Task(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: Date()),
 //        Task(title: "Task 10", description: "", category: "Wishlist"),
 //        Task(title: "Task 11", description: "", category: "Critical"),
-        Task(title: "Task 12", description: "", category: "Critical", priority: "High", status: "Not Started", dueDate: Date()),
+        Task(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: Date()),
 //        Task(title: "Task 13", description: "", category: "Hobby"),
 //        Task(title: "Task 14", description: "", category: "Hobby"),
         Task(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date())
@@ -39,6 +39,19 @@ class TaskViewModel: ObservableObject {
         }
     }
     
+    func updateTask(_ task: Task) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let taskIndex = tasks.firstIndex(where: { $0.id == task.id }) {
+                tasks[taskIndex].title = task.title
+                tasks[taskIndex].description = task.description
+                tasks[taskIndex].category = task.category
+                tasks[taskIndex].priority = task.priority
+                tasks[taskIndex].status = task.status
+                tasks[taskIndex].dueDate = task.dueDate
+            }
+        }
+    }
     func deleteTask(index taskIndex: Int) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else {

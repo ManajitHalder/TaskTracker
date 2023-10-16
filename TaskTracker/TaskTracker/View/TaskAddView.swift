@@ -42,7 +42,7 @@ struct TaskAddView: View {
             
             Section(header: Text("Task Description")) {
                 TextEditor(text: $description)
-                    .frame(height: 70)
+                    .frame(minHeight: 70)
                     .focused($focusedField, equals: 1)
             }
             
@@ -147,7 +147,7 @@ struct TaskAddView: View {
                 .alert(isPresented: $isFieldsEmptyAlertPresented, content: {
                     Alert(
                         title: Text("Empty Fields"),
-                        message: Text("title & description can't be empty."),
+                        message: Text("Title and Description Empty."),
                         dismissButton: .default(Text("OK"), action: {
                             isFieldsEmptyAlertPresented = false
                         })

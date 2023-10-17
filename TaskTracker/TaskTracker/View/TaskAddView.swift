@@ -134,6 +134,8 @@ struct TaskAddView: View {
                         isFieldsEmptyAlertPresented = true
                     } else {
                         taskViewModel.addTask(newTask)
+                        // Go back to previous screen
+                        presentationMode.wrappedValue.dismiss()
                     }
                     // Reset the input fields to defaults
                     resetInputFields()

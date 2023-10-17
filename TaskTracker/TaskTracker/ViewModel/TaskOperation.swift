@@ -39,16 +39,19 @@ class TaskViewModel: ObservableObject {
                 tasks[taskIndex].priority = task.priority
                 tasks[taskIndex].status = task.status
                 tasks[taskIndex].dueDate = task.dueDate
-                tasks[taskIndex].updates.append(contentsOf: task.updates)
+                tasks[taskIndex].updates = task.updates
             }
         }
     }
-    func deleteTask(index taskIndex: Int) {
+    func deleteTask(_ task: Task) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else {
                 return
             }
-            if !self.tasks.isEmpty && taskIndex >= 0 && taskIndex < self.tasks.count {
+//            if !self.tasks.isEmpty && taskIndex >= 0 && taskIndex < self.tasks.count {
+//                self.tasks.remove(at: taskIndex)
+//            }
+            if let taskIndex = tasks.firstIndex(where: { $0.id == task.id }) {
                 self.tasks.remove(at: taskIndex)
             }
         }

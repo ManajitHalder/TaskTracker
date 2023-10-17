@@ -32,7 +32,28 @@ struct TaskDetailView: View {
             
             Section(header: Text("Task Description")) {
                 TextEditor(text: $description)
-                    .frame(minHeight: 70, idealHeight: 150, maxHeight: .infinity)
+                    .frame(minHeight: 70)
+            }
+            
+            Section(header: Text("Task Status Update")) {
+                HStack {
+                    TextField("Add an Update", text: $statusUpdate)
+                    Button {
+                        if !statusUpdate.isEmpty {
+                            updates.append(Update(text: statusUpdate))
+                            statusUpdate = ""
+                            status = "In Progress"
+                        }
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.custom("Cochin", size: 20))
+                    }
+                }
+                List {
+                    ForEach(updates.reversed()) { update in
+                        Text(update.text)
+                    }
+                }
             }
             
             Section(header: Text("Task Category / Type")) {
@@ -83,26 +104,6 @@ struct TaskDetailView: View {
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
-            
-            Section(header: Text("Task Status Update")) {
-                HStack {
-                    TextField("Add an Update", text: $statusUpdate)
-                    Button {
-                        if !statusUpdate.isEmpty {
-                            updates.append(Update(text: statusUpdate))
-                            statusUpdate = ""
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.custom("Cochin", size: 20))
-                    }
-                }
-                List {
-                    ForEach(updates.reversed()) { update in
-                        Text(update.text)
-                    }
-                }
-            }
         }
         .onAppear {
             title = task.title
@@ -126,6 +127,13 @@ struct TaskDetailView: View {
                                        dueDate: dueDate,
                                        updates: updates
                     )
+                    
+                    if status == "Completed" {
+                        taskViewModel.addCompletedTask(task)
+
+                        taskViewModel.deleteTask(task)
+                    }
+                    
                     if title.isEmpty || description.isEmpty {
                         /*
                          dismiss the keyboard before presenting the alert to avoid layout constraint of the system input assistant view error.
@@ -139,6 +147,8 @@ struct TaskDetailView: View {
                         isEmptyFieldPresented = true
                     } else {
                         taskViewModel.updateTask(newTask)
+                        // Go back to previous screen
+                        presentationMode.wrappedValue.dismiss()
                     }
                 }
         )

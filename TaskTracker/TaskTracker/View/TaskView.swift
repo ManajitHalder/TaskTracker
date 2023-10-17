@@ -59,8 +59,10 @@ struct TaskView: View {
                     }
 //                    .navigationTitle(task.title)
                 }
+                .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
             }
+            
             
             Spacer()
             
@@ -143,6 +145,11 @@ struct TaskView: View {
     
     func getListRowColor(_ color: Bool) -> Color {
         return Color.black.opacity(0.03)
+    }
+    
+    // Delete task at swipe from right to left.
+    func deleteTask(at offset: IndexSet) {
+        taskViewModel.tasks.remove(atOffsets: offset)
     }
 }
 

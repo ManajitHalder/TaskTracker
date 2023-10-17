@@ -113,6 +113,8 @@ struct TaskDetailView: View {
             status = task.status
             dueDate = task.dueDate
             updates = task.updates
+            
+            print(taskViewModel.tasks.count)
         }
         .navigationTitle("Task")
         .navigationBarItems(

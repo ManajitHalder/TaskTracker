@@ -20,7 +20,7 @@ struct TaskDetailView: View {
     @State private var dueDate: Date = Date()
     @State private var updates: [Update] = []
     
-    @State private var statusUpdateText: String = ""
+    @State private var statusUpdate: String = ""
 
     @State private var isEmptyFieldPresented: Bool = false
     
@@ -86,11 +86,11 @@ struct TaskDetailView: View {
             
             Section(header: Text("Task Status Update")) {
                 HStack {
-                    TextField("Add an Update", text: $statusUpdateText)
+                    TextField("Add an Update", text: $statusUpdate)
                     Button {
-                        if !statusUpdateText.isEmpty {
-                            updates.append(Update(text: statusUpdateText))
-                            statusUpdateText = ""
+                        if !statusUpdate.isEmpty {
+                            updates.append(Update(text: statusUpdate))
+                            statusUpdate = ""
                         }
                     } label: {
                         Image(systemName: "plus")
@@ -98,7 +98,7 @@ struct TaskDetailView: View {
                     }
                 }
                 List {
-                    ForEach(updates) { update in
+                    ForEach(updates.reversed()) { update in
                         Text(update.text)
                     }
                 }

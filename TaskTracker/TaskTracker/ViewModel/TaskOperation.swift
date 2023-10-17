@@ -10,25 +10,15 @@ import Foundation
 class TaskViewModel: ObservableObject {
     
     @Published var tasks: [Task] = [
-        Task(title: "Task 1", description: ": Start your first project Task Trakcer to track daily tasks with different criteria like task category, priority, task notification, ...", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
-//        Task(title: "Task 2", description: "", category: "Personal"),
-//        Task(title: "Task 3", description: "", category: "Personal"),
-//        Task(title: "Task 4", description: "", category: "Work"),
+        Task(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
         Task(title: "Task 5", description: "", category: "Work", priority: "High", status: "Not Started", dueDate: Date()),
-//        Task(title: "Task 6", description: "", category: "Shopping"),
         Task(title: "Task 7", description: "", category: "Shopping", priority: "High", status: "Not Started", dueDate: Date()),
-//        Task(title: "Task 8", description: "", category: "Wishlist"),
         Task(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: Date()),
-//        Task(title: "Task 10", description: "", category: "Wishlist"),
-//        Task(title: "Task 11", description: "", category: "Critical"),
         Task(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: Date()),
-//        Task(title: "Task 13", description: "", category: "Hobby"),
-//        Task(title: "Task 14", description: "", category: "Hobby"),
         Task(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date())
     ]
     
     @Published var completedTasks: [Task] = [] // To maintain a list of completed tasks.
-//    @Published var filteredTasks: [Task] = [] // To maintain a list of filtered tasks based on task priority, category or status.
     
     func addTask(_ task: Task) {
         DispatchQueue.main.async { [weak self] in
@@ -49,6 +39,7 @@ class TaskViewModel: ObservableObject {
                 tasks[taskIndex].priority = task.priority
                 tasks[taskIndex].status = task.status
                 tasks[taskIndex].dueDate = task.dueDate
+                tasks[taskIndex].updates.append(contentsOf: task.updates)
             }
         }
     }

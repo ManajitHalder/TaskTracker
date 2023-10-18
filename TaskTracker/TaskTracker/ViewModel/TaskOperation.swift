@@ -7,7 +7,8 @@
 import Foundation
 
 
-class TaskViewModel: ObservableObject {
+@MainActor
+final class TaskViewModel: ObservableObject {
     
     @Published var tasks: [Task] = [
         Task(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
@@ -19,6 +20,7 @@ class TaskViewModel: ObservableObject {
     ]
     
     @Published var completedTasks: [Task] = [] // To maintain a list of completed tasks.
+    @Published var searchText: String = ""
     
     func addTask(_ task: Task) {
         DispatchQueue.main.async { [weak self] in
@@ -48,9 +50,6 @@ class TaskViewModel: ObservableObject {
             guard let self = self else {
                 return
             }
-//            if !self.tasks.isEmpty && taskIndex >= 0 && taskIndex < self.tasks.count {
-//                self.tasks.remove(at: taskIndex)
-//            }
             if let taskIndex = tasks.firstIndex(where: { $0.id == task.id }) {
                 self.tasks.remove(at: taskIndex)
             }

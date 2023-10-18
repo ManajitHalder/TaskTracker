@@ -24,18 +24,34 @@ struct TaskDetailView: View {
 
     @State private var isEmptyFieldPresented: Bool = false
     
+    var taskCategory: [String] = [
+        "Personal",
+        "Study",
+        "Work",
+        "Health & Fitness",
+        "Travel",
+        "Entertainment",
+        "Shopping",
+        "Hobby",
+        "Wishlist",
+        "Household"
+    ]
+    
     var body: some View {
         Form {
-            Section(header: Text("Task Title / Heading")) {
+//            Section(header: Text("Task Title / Heading")) {
+            Section {
                 TextField("Title", text: $title)
             }
             
-            Section(header: Text("Task Description")) {
+//            Section(header: Text("Task Description")) {
+            Section {
                 TextEditor(text: $description)
                     .frame(minHeight: 70)
             }
             
-            Section(header: Text("Task Status Update")) {
+//            Section(header: Text("Task Status Update")) {
+            Section {
                 HStack {
                     TextField("Add an Update", text: $statusUpdate)
                     Button {
@@ -56,8 +72,12 @@ struct TaskDetailView: View {
                 }
             }
             
-            Section(header: Text("Task Category / Type")) {
+//            Section(header: Text("Task Category / Type")) {
+            Section {
                 Picker("Category", selection: $category) {
+//                    ForEach(taskCategory, id: \.self) { category in
+//                        Text(category).tag(category)
+//                    }
                     Text("Personal").tag("Personal")
                     Text("Study").tag("Study")
                     Text("Work").tag("Work")
@@ -71,7 +91,8 @@ struct TaskDetailView: View {
                 }
             }
             
-            Section(header: Text("Task Priority")) {
+//            Section(header: Text("Task Priority")) {
+            Section {
                 Picker("Priority", selection: $priority) {
                     Text("High").tag("High")
                     Text("Medium").tag("Medium")
@@ -82,7 +103,8 @@ struct TaskDetailView: View {
                 }
             }
             
-            Section(header: Text("Task Status")) {
+//            Section(header: Text("Task Status")) {
+            Section {
                 Picker("Status", selection: $status) {
                     Text("Not Started").tag("Not Started")
                     Text("In Progress").tag("In Progress")
@@ -93,7 +115,8 @@ struct TaskDetailView: View {
                 }
             }
             
-            Section(header: Text("Task Due Date")) {
+//            Section(header: Text("Task Due Date")) {
+            Section {
                 DatePicker(
                     "Due Date",
                     selection: $dueDate,
@@ -112,9 +135,7 @@ struct TaskDetailView: View {
             priority = task.priority
             status = task.status
             dueDate = task.dueDate
-            updates = task.updates
-            
-            print(taskViewModel.tasks.count)
+            updates = task.updates            
         }
         .navigationTitle("Task")
         .navigationBarItems(

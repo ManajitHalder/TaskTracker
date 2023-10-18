@@ -42,15 +42,15 @@ struct TaskView: View {
         
         VStack(alignment: .leading, spacing: 10) {
                 
-            HStack {
-                Picker("Select Category", selection: $selectedCategory) {
-                    ForEach(categories, id: \.self) { category in
-                        Text(category).tag(category)
-                    }
-                }
-                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
-            }
-            .padding(.leading, 20)
+//            HStack {
+//                Picker("Select Category", selection: $selectedCategory) {
+//                    ForEach(categories, id: \.self) { category in
+//                        Text(category).tag(category)
+//                    }
+//                }
+//                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
+//            }
+//            .padding(.leading, 20)
             
             List {
                 ForEach(filteredTasks, id: \.self) { task in
@@ -62,7 +62,7 @@ struct TaskView: View {
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
             }
-            
+            .searchable(text: $taskViewModel.searchText, placement: .automatic, prompt: "Search Task")
             
             Spacer()
             
@@ -87,45 +87,45 @@ struct TaskView: View {
 //                        .navigationBarTitle("Task Tracker", displayMode: .inline)
                         .navigationTitle("")
                         .navigationBarItems(
-                            leading: HStack {
-                                Button(action: {
-                                    withAnimation {
-                                        isSearching = true
-                                        isSearchFieldFocussed = true
-                                        searchText = ""
-                                    }
-                                }) {
-                                    Image(systemName: "magnifyingglass")
-                                        .font(.custom("Cochin", size: 15))
-                                }
-                                if isSearching {
-                                    TextField("Search Task", text: $searchText)
-//                                        .background(Color(.systemGray5))
-                                        .cornerRadius(8)
-                                        .frame(height: 30)
-                                        .focused($isSearchFieldFocussed)
-                                }
-                            },
+//                            leading: HStack {
+//                                Button(action: {
+//                                    withAnimation {
+////                                        isSearching = true
+////                                        isSearchFieldFocussed = true
+//                                        searchText = ""
+//                                    }
+//                                }) {
+//                                    Image(systemName: "magnifyingglass")
+//                                        .font(.custom("Cochin", size: 15))
+//                                }
+//                                if isSearching {
+//                                    TextField("Search Task", text: $searchText)
+////                                        .background(Color(.systemGray5))
+//                                        .cornerRadius(8)
+//                                        .frame(height: 30)
+//                                        .focused($isSearchFieldFocussed)
+//                                }
+//                            },
                             trailing: HStack {
-                                if isSearching {
-                                    Button {
-                                        withAnimation {
-                                            isSearching = false
-                                            isSearchFieldFocussed = false
-                                            searchText = ""
-                                        }
-                                    } label: {
-                                        Image(systemName: "xmark")
-                                            .font(.custom("Cochin", size: 15))
-                                    }
-                                } else {
+//                                if isSearching {
+//                                    Button {
+//                                        withAnimation {
+//                                            isSearching = false
+//                                            isSearchFieldFocussed = false
+//                                            searchText = ""
+//                                        }
+//                                    } label: {
+//                                        Image(systemName: "xmark")
+//                                            .font(.custom("Cochin", size: 15))
+//                                    }
+//                                } else {
                                     Button(action: {
                                         // Handle the search action
                                     }) {
                                         Image(systemName: "gearshape")
                                             .font(.custom("Cochin", size: 15))
                                     }
-                                }
+//                                }
                             }
                         )
                     }

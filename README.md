@@ -4,10 +4,10 @@ A Personal Task Management app for iOS with server implementation using Vapor. T
 Tools, languages, packages, databases:
 SwiftUI
 Swift
+apiary / Swagger
 Vapor
 PostgreSQL
 Postman
-apiary / Swagger
 
 Features:
 1. Task Creation
@@ -20,3 +20,4 @@ Features:
 8. Notification
 9. User Authentication
 10. Searching a Task
+11. Settings Page

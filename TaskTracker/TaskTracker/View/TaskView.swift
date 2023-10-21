@@ -30,11 +30,19 @@ struct TaskView: View {
         return Array(uniqueCategories) + ["All Tasks"]
     }
 
-    var filteredTasks: [Task] {
+//    var filteredTasks: [Task] {
+//        if selectedCategory == "All Tasks" {
+//            return taskViewModel.tasks
+//        } else {
+//            return taskViewModel.tasks.filter { $0.category == selectedCategory }
+//        }
+//    }
+    
+    var filteredTasks: [TaskItem] {
         if selectedCategory == "All Tasks" {
-            return taskViewModel.tasks
+            return taskViewModel.allTasks
         } else {
-            return taskViewModel.tasks.filter { $0.category == selectedCategory }
+            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
         }
     }
     
@@ -53,9 +61,9 @@ struct TaskView: View {
 //            .padding(.leading, 20)
             
             List {
-                ForEach(filteredTasks, id: \.self) { task in
-                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: task)) {
-                        TaskListItemView(task: task)
+                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : taskViewModel.allTasks, id: \.self) { taskItem in
+                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
+                        TaskListItemView(task: taskItem)
                     }
 //                    .navigationTitle(task.title)
                 }
@@ -63,10 +71,31 @@ struct TaskView: View {
                 .listRowBackground(getListRowColor(alternateColor))
             }
             .searchable(text: $taskViewModel.searchText, placement: .automatic, prompt: "Search Task")
+            .task {
+                await taskViewModel.loadTasks()
+            }
+            
+            HStack {
+                Picker("Select Category", selection: $selectedCategory) {
+                    ForEach(categories, id: \.self) { category in
+                        Text(category).tag(category)
+                    }
+                }
+                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
+            }
+            .padding(.leading, 20)
             
             Spacer()
             
             HStack {
+                
+//                Picker("Select Category", selection: $selectedCategory) {
+//                    ForEach(categories, id: \.self) { category in
+//                        Text(category).tag(category)
+//                    }
+//                }
+//                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
+//
                 Spacer()
                 
                 // Plus Circle for adding Tasks

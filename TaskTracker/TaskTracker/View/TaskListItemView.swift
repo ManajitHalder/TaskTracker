@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct TaskListItemView: View {
-    var task: Task
+    var task: TaskItem
         
     var body: some View {
         HStack {
@@ -51,6 +51,6 @@ struct TaskListItemView: View {
 
 struct TaskListItemView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskListItemView(task: Task(title: "", description: "", dueDate: Date()))
+        TaskListItemView(task: TaskItem(title: "", description: "", dueDate: Date()))
     }
 }

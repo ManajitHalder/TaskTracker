@@ -1,5 +1,5 @@
 //
-//  TaskCategories.swift
+//  TaskItem.swift
 //  
 //  Created by Manajit Halder on 09/10/23 using Swift 5.0 on MacOS 13.4
 //  
@@ -11,7 +11,7 @@ struct Update: Identifiable, Hashable {
     var text: String
 }
 
-struct Task: Identifiable, Hashable {
+struct TaskItem: Identifiable, Hashable {
     var id = UUID()
     var title: String
     var description: String

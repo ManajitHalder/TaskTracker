@@ -10,7 +10,7 @@ struct TaskDetailView: View {
     @ObservedObject var taskViewModel: TaskViewModel
     @Environment(\.presentationMode) var presentationMode
 
-    @State var task: Task
+    @State var task: TaskItem
 
     @State private var title: String = ""
     @State private var description: String = ""
@@ -141,7 +141,7 @@ struct TaskDetailView: View {
         .navigationBarItems(
             trailing:
                 Button("Save") {
-                    let newTask = Task(id: task.id,
+                    let newTask = TaskItem(id: task.id,
                                        title: title,
                                        description: description,
                                        category: category,
@@ -182,6 +182,6 @@ struct TaskDetailView: View {
 
 struct TaskDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskDetailView(taskViewModel: TaskViewModel(), task: Task(title: "", description: "", dueDate: Date()))
+        TaskDetailView(taskViewModel: TaskViewModel(), task: TaskItem(title: "", description: "", dueDate: Date()))
     }
 }

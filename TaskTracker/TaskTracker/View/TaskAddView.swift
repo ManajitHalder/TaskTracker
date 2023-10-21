@@ -111,34 +111,41 @@ struct TaskAddView: View {
             ,
             trailing:
                 Button("Save") {
-                    /* Add your save action here */
-                    
-                    let newTask = Task(title: title,
-                                       description: description,
-                                       category: category,
-                                       priority: priority,
-                                       status: status,
-                                       dueDate: dueDate
-                    )
-                    
-                    // Add the newTask to taskList
-                    if title.isEmpty || description.isEmpty {
-                        /*
-                         dismiss the keyboard before presenting the alert to avoid layout constraint of the system input assistant view error.
-                        */
-                        UIApplication.shared.sendAction(
-                            #selector(UIResponder.resignFirstResponder),
-                            to: nil,
-                            from: nil,
-                            for: nil)
-                        isFieldsEmptyAlertPresented = true
-                    } else {
-                        taskViewModel.addTask(newTask)
-                        // Go back to previous screen
-                        presentationMode.wrappedValue.dismiss()
+                    Task {
+                        
+                        /* Add your save action here */
+                        
+                        let newTask = TaskItem(title: title,
+                                               description: description,
+                                               category: category,
+                                               priority: priority,
+                                               status: status,
+                                               dueDate: dueDate
+                        )
+                        
+                        // Add the newTask to taskList
+                        if title.isEmpty || description.isEmpty {
+                            /*
+                             dismiss the keyboard before presenting the alert to avoid layout constraint of the system input assistant view error.
+                            */
+                            UIApplication.shared.sendAction(
+                                #selector(UIResponder.resignFirstResponder),
+                                to: nil,
+                                from: nil,
+                                for: nil)
+                            isFieldsEmptyAlertPresented = true
+                        } else {
+                            do {
+                                try await taskViewModel.addTask(newTask)
+                            } catch {
+                                print("Add: \(error)")
+                            }
+                            // Go back to previous screen
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        // Reset the input fields to defaults
+                        resetInputFields()
                     }
-                    // Reset the input fields to defaults
-                    resetInputFields()
                 }
                 .buttonStyle(.bordered)
                 .contentShape(Rectangle())

@@ -23,7 +23,7 @@ struct TaskView: View {
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
-        taskViewModel.tasks.forEach { task in
+        taskViewModel.allTasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
         
@@ -61,7 +61,7 @@ struct TaskView: View {
 //            .padding(.leading, 20)
             
             List {
-                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : taskViewModel.allTasks, id: \.self) { taskItem in
+                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filteredTasks, id: \.self) { taskItem in
                     NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
                         TaskListItemView(task: taskItem)
                     }
@@ -71,9 +71,12 @@ struct TaskView: View {
                 .listRowBackground(getListRowColor(alternateColor))
             }
             .searchable(text: $taskViewModel.searchText, placement: .automatic, prompt: "Search Task")
-            .task {
-                await taskViewModel.loadTasks()
-            }
+//            .task {
+//                taskViewModel.loadTasks()
+//            }
+//            .onAppear {
+//                taskViewModel.loadTasks()
+//            }
             
             HStack {
                 Picker("Select Category", selection: $selectedCategory) {
@@ -107,6 +110,7 @@ struct TaskView: View {
                     
                     Button(action: {
                         isAddingTask.toggle()
+//                        isSearching.toggle()
                     }) {
                         NavigationLink(destination: TaskAddView(taskViewModel: taskViewModel)) {
                             Image(systemName: "plus")
@@ -178,7 +182,7 @@ struct TaskView: View {
     
     // Delete task at swipe from right to left.
     func deleteTask(at offset: IndexSet) {
-        taskViewModel.tasks.remove(atOffsets: offset)
+        taskViewModel.allTasks.remove(atOffsets: offset)
     }
 }
 

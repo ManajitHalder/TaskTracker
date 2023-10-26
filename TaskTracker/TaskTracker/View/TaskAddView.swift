@@ -133,13 +133,14 @@ struct TaskAddView: View {
                                 to: nil,
                                 from: nil,
                                 for: nil)
+//                            UIApplication.shared.endEditing() // Call to dismiss keyboard
                             isFieldsEmptyAlertPresented = true
                         } else {
-                            do {
-                                try await taskViewModel.addTask(newTask)
-                            } catch {
-                                print("Add: \(error)")
-                            }
+//                            do {
+                            taskViewModel.addTask(newTask)
+//                            } catch {
+//                                print("Add: \(error)")
+//                            }
                             // Go back to previous screen
                             presentationMode.wrappedValue.dismiss()
                         }

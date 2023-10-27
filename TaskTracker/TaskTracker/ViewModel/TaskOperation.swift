@@ -15,7 +15,8 @@ final class TaskManager {
             TaskItem(title: "Task 7", description: "", category: "Shopping", priority: "High", status: "Not Started", dueDate: Date()),
             TaskItem(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: Date()),
             TaskItem(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: Date()),
-            TaskItem(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date())
+            TaskItem(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date()),
+            TaskItem(title: "Cook Khichdi", description: "Prepare Khichdi for dinner", category: "Other", priority: "High", status: "Not Started", dueDate: Date())
         ]
     }
 }
@@ -35,6 +36,7 @@ final class TaskViewModel: ObservableObject {
     @Published private(set) var filteredTasks: [TaskItem] = []
     @Published private(set) var completedTasks: [TaskItem] = [] // To maintain a list of completed tasks.
     @Published var searchText: String = ""
+    @Published var useSegmentedPickerStyle: Bool = false
     
     let taskManager = TaskManager()
     private var cancellables = Set<AnyCancellable>()

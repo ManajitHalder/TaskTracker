@@ -9,7 +9,7 @@ import SwiftUI
 struct TaskView: View {
     @StateObject private var taskViewModel = TaskViewModel()
     
-    @State private var selectedCategory = "All Tasks"
+    @State private var selectedCategory = "All"
     @State private var isDrawerOpen = false
     @State private var isAddingTask = false
     @State private var alternateColor = false
@@ -19,7 +19,7 @@ struct TaskView: View {
     @FocusState private var isSearchFieldFocussed: Bool
     
     @State private var taskFilter: String = "category"
-    
+        
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
@@ -27,19 +27,11 @@ struct TaskView: View {
             uniqueCategories.insert(task.category)
         }
         
-        return Array(uniqueCategories) + ["All Tasks"]
+        return Array(uniqueCategories) + ["All"]
     }
-
-//    var filteredTasks: [Task] {
-//        if selectedCategory == "All Tasks" {
-//            return taskViewModel.tasks
-//        } else {
-//            return taskViewModel.tasks.filter { $0.category == selectedCategory }
-//        }
-//    }
     
     var filteredTasks: [TaskItem] {
-        if selectedCategory == "All Tasks" {
+        if selectedCategory == "All" {
             return taskViewModel.allTasks
         } else {
             return taskViewModel.allTasks.filter { $0.category == selectedCategory }
@@ -49,17 +41,6 @@ struct TaskView: View {
     var body: some View {
         
         VStack(alignment: .leading, spacing: 10) {
-                
-//            HStack {
-//                Picker("Select Category", selection: $selectedCategory) {
-//                    ForEach(categories, id: \.self) { category in
-//                        Text(category).tag(category)
-//                    }
-//                }
-//                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
-//            }
-//            .padding(.leading, 20)
-            
             List {
                 ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filteredTasks, id: \.self) { taskItem in
                     NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
@@ -70,7 +51,44 @@ struct TaskView: View {
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
             }
-            .searchable(text: $taskViewModel.searchText, placement: .automatic, prompt: "Search Task")
+            .searchable(text: $taskViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
+            .navigationBarItems(
+                trailing:
+                    Button {
+//                        NavigationLink(destination: TaskListItemView(task: TaskItem(title: "tt", description: "dd", dueDate: Date()))) {
+//                            TaskListItemView(task: TaskItem(title: "tt", description: "dd", dueDate: Date()))
+                        //
+//                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .rotationEffect(.degrees(90))
+                            .font(.custom("Cochin", size: 15))
+                            .contextMenu {
+                                Button {
+                                    //
+                                } label: {
+                                    Text("item 1")
+                                }
+
+                                Button {
+                                    //
+                                } label: {
+                                    Text("item 2")
+                                }
+                                
+                                Button {
+                                    //
+                                } label: {
+                                    Text("item 3")
+                                }
+                                
+                                NavigationLink(destination: SettingsView(), label: {
+                                    Text("Settings")
+                                })
+                            }
+                            .menuStyle(.button)
+                    }
+            )
 //            .task {
 //                taskViewModel.loadTasks()
 //            }
@@ -79,26 +97,35 @@ struct TaskView: View {
 //            }
             
             HStack {
-                Picker("Select Category", selection: $selectedCategory) {
-                    ForEach(categories, id: \.self) { category in
-                        Text(category).tag(category)
+                if taskViewModel.useSegmentedPickerStyle {
+                    Picker("Select Category", selection: $selectedCategory) {
+                        ForEach(categories, id: \.self) { category in
+                            Text(category).tag(category)
+                        }
                     }
+                    .pickerStyle(.segmented)
+                } else {
+                    Picker("Select Category", selection: $selectedCategory) {
+                        ForEach(categories, id: \.self) { category in
+                            Text(category).tag(category)
+                        }
+                    }
+                    .pickerStyle(.menu)
                 }
-                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
             }
-            .padding(.leading, 20)
-            
-            Spacer()
+            .padding([.leading, .trailing], 20)
+            .padding([.top, .bottom], 10)
+            .background(Color.indigo.opacity(0.5))
             
             HStack {
-                
-//                Picker("Select Category", selection: $selectedCategory) {
-//                    ForEach(categories, id: \.self) { category in
-//                        Text(category).tag(category)
-//                    }
-//                }
-//                .pickerStyle(MenuPickerStyle()) // Use MenuPickerStyle to make it look like a dropdown menu
-//
+                Button {
+                    //
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .frame(width: 30, height: 30)
+//                        .foregroundColor(.white)
+                }
+
                 Spacer()
                 
                 // Plus Circle for adding Tasks
@@ -110,57 +137,13 @@ struct TaskView: View {
                     
                     Button(action: {
                         isAddingTask.toggle()
-//                        isSearching.toggle()
                     }) {
                         NavigationLink(destination: TaskAddView(taskViewModel: taskViewModel)) {
                             Image(systemName: "plus")
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.white)
                         }
-//                        .navigationBarTitle("Task Tracker", displayMode: .inline)
-                        .navigationTitle("")
-                        .navigationBarItems(
-//                            leading: HStack {
-//                                Button(action: {
-//                                    withAnimation {
-////                                        isSearching = true
-////                                        isSearchFieldFocussed = true
-//                                        searchText = ""
-//                                    }
-//                                }) {
-//                                    Image(systemName: "magnifyingglass")
-//                                        .font(.custom("Cochin", size: 15))
-//                                }
-//                                if isSearching {
-//                                    TextField("Search Task", text: $searchText)
-////                                        .background(Color(.systemGray5))
-//                                        .cornerRadius(8)
-//                                        .frame(height: 30)
-//                                        .focused($isSearchFieldFocussed)
-//                                }
-//                            },
-                            trailing: HStack {
-//                                if isSearching {
-//                                    Button {
-//                                        withAnimation {
-//                                            isSearching = false
-//                                            isSearchFieldFocussed = false
-//                                            searchText = ""
-//                                        }
-//                                    } label: {
-//                                        Image(systemName: "xmark")
-//                                            .font(.custom("Cochin", size: 15))
-//                                    }
-//                                } else {
-                                    Button(action: {
-                                        // Handle the search action
-                                    }) {
-                                        Image(systemName: "gearshape")
-                                            .font(.custom("Cochin", size: 15))
-                                    }
-//                                }
-                            }
-                        )
+                        .navigationBarTitle("\(selectedCategory) Tasks", displayMode: .inline)
                     }
                     .frame(width: 20, height: 20)
                     .padding()
@@ -168,8 +151,12 @@ struct TaskView: View {
                     .clipShape(Circle())
                     .padding(.bottom, 20)
                 }
+                
                 Spacer()
                 
+                Text("End")
+                    .padding(.leading, 40)
+                    .padding(.trailing)
             }
             .frame(maxHeight: 40)
             .background(.bar)
@@ -183,6 +170,9 @@ struct TaskView: View {
     // Delete task at swipe from right to left.
     func deleteTask(at offset: IndexSet) {
         taskViewModel.allTasks.remove(atOffsets: offset)
+        
+        // Update the picker style based upon the count of all tasks in the task list
+        taskViewModel.useSegmentedPickerStyle = $taskViewModel.allTasks.count > 5 ? false : true
     }
 }
 

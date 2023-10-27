@@ -138,6 +138,10 @@ struct TaskAddView: View {
                         } else {
 //                            do {
                             taskViewModel.addTask(newTask)
+                            
+                            // Update the picker style based upon the count of all tasks in the task list
+                            taskViewModel.useSegmentedPickerStyle = $taskViewModel.allTasks.count > 5 ? false : true
+                            
 //                            } catch {
 //                                print("Add: \(error)")
 //                            }

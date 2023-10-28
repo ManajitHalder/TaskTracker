@@ -141,5 +141,6 @@ final class TaskViewModel: ObservableObject {
         }
     }
     
-    // Add update to the 
+    //MARK: - TASK FILTERING
+    
 }

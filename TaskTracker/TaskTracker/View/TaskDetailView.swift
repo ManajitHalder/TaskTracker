@@ -139,7 +139,16 @@ struct TaskDetailView: View {
         }
         .navigationTitle("Task")
         .navigationBarItems(
-            trailing:
+            leading:
+                Button(action: {
+                    // Go back to previous screen
+                    presentationMode.wrappedValue.dismiss()
+                }, label: {
+                    Image(systemName: "chevron.backward")
+                })
+                .padding(.leading, 10)
+            
+            , trailing:
                 Button("Save") {
                     let newTask = TaskItem(id: task.id,
                                        title: title,
@@ -174,9 +183,10 @@ struct TaskDetailView: View {
                         presentationMode.wrappedValue.dismiss()
                     }
                 }
+                .padding(.trailing, 20)
         )
         .navigationBarTitleDisplayMode(.inline)
-//        .navigationBarBackButtonHidden(true) // Hide the automatically created "Back" button
+        .navigationBarBackButtonHidden(true) // Hide the automatically created "Back" button
     }
 }
 

@@ -19,6 +19,8 @@ struct TaskView: View {
     @FocusState private var isSearchFieldFocussed: Bool
     
     @State private var taskFilter: String = "category"
+    
+    @State private var currentStatus = "In Progress"
         
     var categories: [String] {
         var uniqueCategories = Set<String>()
@@ -38,63 +40,48 @@ struct TaskView: View {
         }
     }
     
+    func filterTasks() -> [TaskItem] {
+        if selectedCategory == "All" {
+            return taskViewModel.allTasks
+        } else if selectedCategory == "In Progress" {
+            return taskViewModel.allTasks.filter { $0.status == selectedCategory }
+        } else if selectedCategory == "Today" {
+            print("Today ")
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            let currentDate = Date()
+            let todaysDate = dateFormatter.string(from: currentDate)
+            
+            let datess = dateFormatter.date(from: todaysDate)
+            
+//            let dateToday = dateFormatter.string(from: )
+            print(todaysDate)
+            print(datess!)
+            
+            return taskViewModel.allTasks.filter { $0.dueDate == datess }
+        } else if selectedCategory == "Completed" {
+            return taskViewModel.completedTasks
+        } else {
+            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+        }
+    }
+    
     var body: some View {
         
         VStack(alignment: .leading, spacing: 10) {
             List {
-                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filteredTasks, id: \.self) { taskItem in
+                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filterTasks(), id: \.self) { taskItem in
                     NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
                         TaskListItemView(task: taskItem)
+//                            .navigationTitle("")
                     }
 //                    .navigationTitle(task.title)
                 }
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
+//                .navigationTitle("")
             }
             .searchable(text: $taskViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
-            .navigationBarItems(
-                trailing:
-                    Button {
-//                        NavigationLink(destination: TaskListItemView(task: TaskItem(title: "tt", description: "dd", dueDate: Date()))) {
-//                            TaskListItemView(task: TaskItem(title: "tt", description: "dd", dueDate: Date()))
-                        //
-//                        }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .rotationEffect(.degrees(90))
-                            .font(.custom("Cochin", size: 15))
-                            .contextMenu {
-                                Button {
-                                    //
-                                } label: {
-                                    Text("item 1")
-                                }
-
-                                Button {
-                                    //
-                                } label: {
-                                    Text("item 2")
-                                }
-                                
-                                Button {
-                                    //
-                                } label: {
-                                    Text("item 3")
-                                }
-                                
-                                NavigationLink(destination: SettingsView(), label: {
-                                    Text("Settings")
-                                })
-                            }
-                            .menuStyle(.button)
-                    }
-            )
-//            .task {
-//                taskViewModel.loadTasks()
-//            }
-//            .onAppear {
-//                taskViewModel.loadTasks()
-//            }
             
             HStack {
                 if taskViewModel.useSegmentedPickerStyle {
@@ -118,14 +105,50 @@ struct TaskView: View {
             .background(Color.indigo.opacity(0.5))
             
             HStack {
-                Button {
-                    //
-                } label: {
-                    Image(systemName: "arrow.clockwise")
-                        .frame(width: 30, height: 30)
-//                        .foregroundColor(.white)
+                
+                ZStack {
+                    Menu(content: {
+                        Button {
+                            //
+                        } label: {
+                            Text("Upcoming").tag("Upcoming")
+                        }
+                        
+                        Button {
+                            selectedCategory = "Today"
+                        } label: {
+                            Text("Today").tag("Today")
+                        }
+                        
+                        Divider()
+                        
+                        Section("Status") {
+                            Button {
+                                selectedCategory = "Completed"
+                            } label: {
+                                Text("Completed").tag("Completed")
+                            }
+                            
+                            Button {
+                                selectedCategory = "In Progress"
+                            } label: {
+                                Text("In Progress").tag("In Progress")
+                            }
+                        }
+                    }, label: {
+                        Label("Menu", systemImage: "line.3.horizontal")
+                            .font(.custom("Cochin", size: 20))
+                            .foregroundColor(.black)
+                    })
+                    .padding(.leading, 20)
+                    .padding(.top, 30)
+                    .frame(width: 10, height: 15)
+                    .padding()
+                    .clipShape(Rectangle())
+                    .padding(.bottom, 20)
                 }
-
+                .padding()
+                
                 Spacer()
                 
                 // Plus Circle for adding Tasks
@@ -154,9 +177,46 @@ struct TaskView: View {
                 
                 Spacer()
                 
-                Text("End")
-                    .padding(.leading, 40)
-                    .padding(.trailing)
+                ZStack {
+                    Menu {
+                        NavigationLink(destination: SettingsView(), label: {
+                            Text("Settings")
+                        })
+                           
+                        Divider()
+                        
+                        Button {
+                            //
+                        } label: {
+                            Text("item 3")
+                        }
+
+                        Button {
+                            //
+                        } label: {
+                            Text("item 2")
+                        }
+                        
+                        Button {
+                            //
+                        } label: {
+                            Text("item 1")
+                        }
+
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                            .font(.custom("Cochin", size: 20))
+                            .rotationEffect(.degrees(90))
+                            .foregroundColor(.black)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.top, 40)
+                    .frame(width: 10, height: 25)
+                    .padding()
+                    .clipShape(Rectangle())
+                    .padding(.bottom, 20)
+                }
+                .padding()
             }
             .frame(maxHeight: 40)
             .background(.bar)

@@ -160,6 +160,14 @@ struct TaskDetailView: View {
                                        updates: updates
                     )
                     
+                    task.title = title
+                    task.description = description
+                    task.category = category
+                    task.priority = priority
+                    task.status = status
+                    task.dueDate = dueDate
+                    task.updates = updates
+                    
                     if status == "Completed" {
                         taskViewModel.addCompletedTask(task)
 

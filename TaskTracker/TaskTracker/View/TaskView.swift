@@ -10,17 +10,21 @@ struct TaskView: View {
     @StateObject private var taskViewModel = TaskViewModel()
     
     @State private var selectedCategory = "All"
-    @State private var isDrawerOpen = false
+//    @State private var isDrawerOpen = false
     @State private var isAddingTask = false
     @State private var alternateColor = false
     
     @State private var searchText: String = ""
     @State private var isSearching: Bool = false
-    @FocusState private var isSearchFieldFocussed: Bool
+//    @FocusState private var isSearchFieldFocussed: Bool
     
-    @State private var taskFilter: String = "category"
+//    @State private var taskFilter: String = "category"
     
-    @State private var currentStatus = "In Progress"
+//    @State private var currentStatus = "In Progress"
+    
+    @EnvironmentObject var userSettings: SettingsViewModel
+    
+    @State private var status: String = "Not Started"
         
     var categories: [String] {
         var uniqueCategories = Set<String>()
@@ -60,7 +64,7 @@ struct TaskView: View {
             
             return taskViewModel.allTasks.filter { $0.dueDate == datess }
         } else if selectedCategory == "Completed" {
-            return taskViewModel.completedTasks
+            return Array(taskViewModel.completedTasks)
         } else {
             return taskViewModel.allTasks.filter { $0.category == selectedCategory }
         }
@@ -73,12 +77,34 @@ struct TaskView: View {
                 ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filterTasks(), id: \.self) { taskItem in
                     NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
                         TaskListItemView(task: taskItem)
+                            .contextMenu {
+                                
+                                Section(taskItem.title) {
+                                    Button {
+                                        status = "In Progress"
+                                        taskViewModel.startTask(taskItem, status)
+                                    } label: {
+                                        Label("Start", systemImage: "play.fill")
+                                        
+                                    }
+                                    
+                                    Button {
+                                        status = "Completed"
+                                        taskViewModel.completeTask(taskItem, status)
+                                        taskViewModel.addCompletedTask(taskItem)
+                                        taskViewModel.deleteTask(taskItem)
+                                    } label: {
+                                        Label("Complete", systemImage: "c.square.fill")
+                                    }
+                                }
+                            }
 //                            .navigationTitle("")
                     }
 //                    .navigationTitle(task.title)
                 }
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
+                
 //                .navigationTitle("")
             }
             .searchable(text: $taskViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
@@ -106,48 +132,48 @@ struct TaskView: View {
             
             HStack {
                 
-                ZStack {
-                    Menu(content: {
-                        Button {
-                            //
-                        } label: {
-                            Text("Upcoming").tag("Upcoming")
-                        }
-                        
-                        Button {
-                            selectedCategory = "Today"
-                        } label: {
-                            Text("Today").tag("Today")
-                        }
-                        
-                        Divider()
-                        
-                        Section("Status") {
-                            Button {
-                                selectedCategory = "Completed"
-                            } label: {
-                                Text("Completed").tag("Completed")
-                            }
-                            
-                            Button {
-                                selectedCategory = "In Progress"
-                            } label: {
-                                Text("In Progress").tag("In Progress")
-                            }
-                        }
-                    }, label: {
-                        Label("Menu", systemImage: "line.3.horizontal")
-                            .font(.custom("Cochin", size: 20))
-                            .foregroundColor(.black)
-                    })
-                    .padding(.leading, 20)
-                    .padding(.top, 30)
-                    .frame(width: 10, height: 15)
-                    .padding()
-                    .clipShape(Rectangle())
-                    .padding(.bottom, 20)
-                }
-                .padding()
+//                ZStack {
+//                    Menu(content: {
+//                        Button {
+//                            //
+//                        } label: {
+//                            Text("Upcoming").tag("Upcoming")
+//                        }
+//
+//                        Button {
+//                            selectedCategory = "Today"
+//                        } label: {
+//                            Text("Today").tag("Today")
+//                        }
+//
+//                        Divider()
+//
+//                        Section("Status") {
+//                            Button {
+//                                selectedCategory = "Completed"
+//                            } label: {
+//                                Text("Completed").tag("Completed")
+//                            }
+//
+//                            Button {
+//                                selectedCategory = "In Progress"
+//                            } label: {
+//                                Text("In Progress").tag("In Progress")
+//                            }
+//                        }
+//                    }, label: {
+//                        Label("Menu", systemImage: "line.3.horizontal")
+//                            .font(.custom("Cochin", size: 20))
+//                            .foregroundColor(.black)
+//                    })
+//                    .padding(.leading, 20)
+//                    .padding(.top, 30)
+//                    .frame(width: 10, height: 15)
+//                    .padding()
+//                    .clipShape(Rectangle())
+//                    .padding(.bottom, 20)
+//                }
+//                .padding()
                 
                 Spacer()
                 
@@ -177,50 +203,100 @@ struct TaskView: View {
                 
                 Spacer()
                 
-                ZStack {
-                    Menu {
-                        NavigationLink(destination: SettingsView(), label: {
-                            Text("Settings")
-                        })
-                           
-                        Divider()
-                        
-                        Button {
-                            //
-                        } label: {
-                            Text("item 3")
-                        }
-
-                        Button {
-                            //
-                        } label: {
-                            Text("item 2")
-                        }
-                        
-                        Button {
-                            //
-                        } label: {
-                            Text("item 1")
-                        }
-
-                    } label: {
-                        Label("Settings", systemImage: "gear")
-                            .font(.custom("Cochin", size: 20))
-                            .rotationEffect(.degrees(90))
-                            .foregroundColor(.black)
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.top, 40)
-                    .frame(width: 10, height: 25)
-                    .padding()
-                    .clipShape(Rectangle())
-                    .padding(.bottom, 20)
-                }
-                .padding()
+//                NavigationStack {
+////                    ZStack {
+//                        Menu {
+//
+//                            NavigationLink {
+//                                EmptyView()
+//                            } label: {
+//                                Text("Settings")
+//                            }
+//
+//                            Divider()
+//
+//                            Button {
+//                                //
+//                            } label: {
+//                                Text("item 3")
+//                            }
+//
+//
+//                        } label: {
+//                            Label("Settings", systemImage: "gear")
+//                                .font(.custom("Cochin", size: 20))
+//                                .rotationEffect(.degrees(90))
+//                                .foregroundColor(.black)
+//                        }
+////                        .padding(.trailing, 20)
+////                        .padding(.top, 40)
+////                        .frame(width: 10, height: 25)
+////                        .padding()
+////                        .clipShape(Rectangle())
+////                        .padding(.bottom, 20)
+////                    }
+////                    .padding()
+//                }
             }
             .frame(maxHeight: 40)
             .background(.bar)
         }
+        .navigationBarItems(
+            leading:
+                Menu(content: {
+                    Button {
+                        //
+                    } label: {
+                        Text("Upcoming").tag("Upcoming")
+                    }
+                    
+                    Button {
+                        selectedCategory = "Today"
+                    } label: {
+                        Text("Today").tag("Today")
+                    }
+                    
+                    Divider()
+                    
+                    Section("Status") {
+                        NavigationLink("Completed") {
+                            CompletedTaskView(taskViewModel: taskViewModel)
+                        }
+//                        Button {
+//                            selectedCategory = "Completed"
+//
+//                        } label: {
+//                            Text("Completed").tag("Completed")
+//                        }
+                        
+                        Button {
+                            selectedCategory = "In Progress"
+                        } label: {
+                            Text("In Progress").tag("In Progress")
+                        }
+                    }
+                }, label: {
+                    Label("Menu", systemImage: "line.3.horizontal")
+                        .font(.custom("Cochin", size: 15))
+                        .foregroundColor(.black)
+                })
+            , trailing:
+                Menu {
+                    NavigationLink("Settings") {
+                        SettingsView()
+                    }
+                    
+                    Button {
+                    } label: {
+                        Text("item1")
+                    }
+                } label: {
+                    Label("", systemImage: "ellipsis")
+                        .font(.custom("Cochin", size: 15))
+                        .rotationEffect(.degrees(90))
+                        .foregroundColor(.black)
+                }
+        )
     }
     
     func getListRowColor(_ color: Bool) -> Color {

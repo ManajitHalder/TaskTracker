@@ -7,8 +7,16 @@
 import SwiftUI
 
 struct SettingsView: View {
+    //@EnvironmentObject var userSettings: SettingsViewModel
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("")
+        VStack {
+            Text("item 1")
+            Text("item 2")
+            Text("item 3")
+            Text("item 4")
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import Foundation
 import Combine
 
 final class TaskManager {
+//    let update1 = Update(id: <#T##arg#>, text: <#T##String#>)
     func getAllTasks() -> [TaskItem] {
         [
             TaskItem(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
@@ -16,7 +17,9 @@ final class TaskManager {
             TaskItem(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: Date()),
             TaskItem(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: Date()),
             TaskItem(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date()),
-            TaskItem(title: "Cook Khichdi", description: "Prepare Khichdi for dinner", category: "Other", priority: "High", status: "Not Started", dueDate: Date())
+            TaskItem(title: "Cook Khichdi", description: "Prepare Khichdi for dinner", category: "Other", priority: "High", status: "Not Started", dueDate: Date()),
+            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Not Started", dueDate: Date(), updates: [Update(text: "Started"), Update(text: "Preapared detailed plan"), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing next week")]),
+            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Not Started", dueDate: Date(), updates: [Update(text: "Started"), Update(text: "Learning so many things on iOS and Swift. Going to implement backend next week."), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing soon")])
         ]
     }
 }
@@ -34,7 +37,7 @@ final class TaskViewModel: ObservableObject {
     
     @Published var allTasks: [TaskItem] = []
     @Published private(set) var filteredTasks: [TaskItem] = []
-    @Published private(set) var completedTasks: [TaskItem] = [] // To maintain a list of completed tasks.
+    @Published private(set) var completedTasks = Set<TaskItem>() // To maintain a list of completed tasks.
     @Published var searchText: String = ""
     @Published var useSegmentedPickerStyle: Bool = false
     
@@ -122,6 +125,7 @@ final class TaskViewModel: ObservableObject {
             }
         }
     }
+    
     func deleteTask(_ task: TaskItem) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else {
@@ -137,7 +141,34 @@ final class TaskViewModel: ObservableObject {
     func addCompletedTask(_ completedTask: TaskItem) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.completedTasks.append(completedTask)
+            print(completedTask.status)
+            self.completedTasks.insert(completedTask)
+        }
+    }
+    
+    //MARK: - CONTEXT MENU OPERATIONS
+    
+    // Start task
+    func startTask(_ task: TaskItem, _ status: String) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let taskIndex = allTasks.firstIndex(where:  { $0.id == task.id }) {
+                print("Before \(task.id), \(task.status), \(status), allTask: \(allTasks[taskIndex].status)")
+                allTasks[taskIndex].status = status
+                print("After \(task.id), \(task.status), \(status), allTask: \(allTasks[taskIndex].status)")
+            }
+        }
+    }
+    
+    // Complete task
+    func completeTask(_ task: TaskItem, _ status: String) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let taskIndex = allTasks.firstIndex(where: { $0.id == task.id }) {
+                print("Before \(task.id), \(task.status), \(status), allTask: \(allTasks[taskIndex].status)")
+                allTasks[taskIndex].status = status
+                print("After \(task.id), \(task.status), \(status), allTask: \(allTasks[taskIndex].status)")
+            }
         }
     }
     

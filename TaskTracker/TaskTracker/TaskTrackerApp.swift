@@ -8,10 +8,13 @@ import SwiftUI
 
 @main
 struct TaskTrackerApp: App {
+    let settingsViewModel = SettingsViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            NavigationView {
+            NavigationStack {
                 TaskView()
+                    .environmentObject(settingsViewModel)
             }
         }
     }

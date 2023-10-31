@@ -11,14 +11,24 @@ struct Update: Identifiable, Hashable {
     var text: String
 }
 
+//enum TaskDates: String {
+//    case startDate
+//    case dueDate
+//    case finisDate
+//    
+//    init() {}
+//}
+
 struct TaskItem: Identifiable, Hashable {
     var id = UUID()
-    var title: String
-    var description: String
+    var title: String = ""
+    var description: String = ""
     var category: String = ""
     var priority: String = ""
     var status: String = ""
-    var dueDate: Date
+//    var taskDate: TaskDate = TaskDate()
+    var dueDate: String = ""
+//    var finishDate: String = ""
     var updates: [Update] = []
 }
 

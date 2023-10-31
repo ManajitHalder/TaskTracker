@@ -134,8 +134,8 @@ struct TaskDetailView: View {
             category = task.category
             priority = task.priority
             status = task.status
-            dueDate = task.dueDate
-            updates = task.updates            
+            dueDate = DateUtils.stringToDate(task.dueDate)!
+            updates = task.updates
         }
         .navigationTitle("Task")
         .navigationBarItems(
@@ -156,7 +156,7 @@ struct TaskDetailView: View {
                                        category: category,
                                        priority: priority,
                                        status: status,
-                                       dueDate: dueDate,
+                                        dueDate: DateUtils.dateToString(dueDate),
                                        updates: updates
                     )
                     
@@ -165,7 +165,7 @@ struct TaskDetailView: View {
                     task.category = category
                     task.priority = priority
                     task.status = status
-                    task.dueDate = dueDate
+                    task.dueDate = DateUtils.dateToString(dueDate)
                     task.updates = updates
                     
                     if status == "Completed" {
@@ -200,6 +200,6 @@ struct TaskDetailView: View {
 
 struct TaskDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskDetailView(taskViewModel: TaskViewModel(), task: TaskItem(title: "", description: "", dueDate: Date()))
+        TaskDetailView(taskViewModel: TaskViewModel(), task: TaskItem())
     }
 }

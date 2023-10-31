@@ -32,7 +32,7 @@ struct TaskListItemView: View {
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
                 
-                Text("Due Date: \t\(formattedDate(task.dueDate))")
+                Text("Due Date: \t\(task.dueDate)")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
@@ -40,17 +40,10 @@ struct TaskListItemView: View {
             .padding([.leading, .trailing], 20)
         }
     }
-    
-    func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        
-        return formatter.string(from: date)
-    }
 }
 
 struct TaskListItemView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskListItemView(task: TaskItem(title: "", description: "", dueDate: Date()))
+        TaskListItemView(task: TaskItem())
     }
 }

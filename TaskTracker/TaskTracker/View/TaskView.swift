@@ -26,6 +26,29 @@ struct TaskView: View {
     
     @State private var status: String = "Not Started"
         
+    enum filterType {
+        case taskCategory
+        case taskSchedule
+        case taskStatus
+        case none
+    }
+    
+    enum filterStatus {
+        case inProgress
+        case completed
+        case none
+    }
+    
+    enum taskScheduleEnum {
+        case today
+        case upcoming
+        case none
+    }
+    
+    @State private var taskFilter: filterType = .none
+    @State private var taskScheduleFilter: taskScheduleEnum = .none
+    @State private var taskStatusFilter: filterStatus = .none
+    
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
@@ -45,29 +68,68 @@ struct TaskView: View {
     }
     
     func filterTasks() -> [TaskItem] {
-        if selectedCategory == "All" {
-            return taskViewModel.allTasks
-        } else if selectedCategory == "In Progress" {
-            return taskViewModel.allTasks.filter { $0.status == selectedCategory }
-        } else if selectedCategory == "Today" {
-            print("Today ")
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .medium
-            let currentDate = Date()
-            let todaysDate = dateFormatter.string(from: currentDate)
+        
+        switch taskFilter {
+        case .taskCategory:
+            if selectedCategory == "All" {
+                return taskViewModel.allTasks
+            } else {
+                return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+            }
             
-            let datess = dateFormatter.date(from: todaysDate)
+        case .taskSchedule:
+            switch taskScheduleFilter {
+            case .today:
+                let todaysDate = DateUtils.dateToString(Date())
+                return taskViewModel.allTasks.filter { $0.dueDate ==  todaysDate }
+                
+            case .upcoming:
+                let todaysDate = DateUtils.dateToString(Date())
+                return taskViewModel.allTasks.filter { $0.dueDate >  todaysDate }
+            case .none:
+                print("taskSchedule: none")
+            }
             
-//            let dateToday = dateFormatter.string(from: )
-            print(todaysDate)
-            print(datess!)
-            
-            return taskViewModel.allTasks.filter { $0.dueDate == datess }
-        } else if selectedCategory == "Completed" {
-            return Array(taskViewModel.completedTasks)
-        } else {
-            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+        case .taskStatus:
+            switch taskStatusFilter {
+            case .inProgress:
+                return taskViewModel.allTasks.filter { $0.status == "In Progress" }
+            case .completed:
+                print("taskStatusFilter: Completed")
+            case .none:
+                print("taskStatusFilter: none")
+            }
+        case .none:
+            print("taskFilter: none")
         }
+        
+//        if selectedCategory == "All" {
+//            return taskViewModel.allTasks
+//        } else if selectedCategory == "In Progress" {
+//            return taskViewModel.allTasks.filter { $0.status == selectedCategory }
+//        } else if selectedCategory == "Today" {
+////            print("dueDate: \($0.dueDate)")
+//            let todaysDate = DateUtils.dateToString(Date())
+//            print("todays date: \(todaysDate)")
+//
+////            let datess = dateFormatter.date(from: todaysDate)
+//
+//            return taskViewModel.allTasks.filter { $0.dueDate ==  todaysDate }
+//        } else if selectedCategory == "Upcoming" {
+//            print("Upcoming")
+//            //            print("dueDate: \($0.dueDate)")
+//            let todaysDate = DateUtils.dateToString(Date())
+//            print("todays date: \(todaysDate)")
+//
+//            //            let datess = dateFormatter.date(from: todaysDate)
+//
+//            return taskViewModel.allTasks.filter { $0.dueDate >  todaysDate }
+//        } else if selectedCategory == "Completed" {
+//            return Array(taskViewModel.completedTasks)
+//        } else {
+//            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+//        }
+        return taskViewModel.allTasks
     }
     
     var body: some View {
@@ -111,19 +173,33 @@ struct TaskView: View {
             
             HStack {
                 if taskViewModel.useSegmentedPickerStyle {
+//                    taskFilter = .taskCategory
                     Picker("Select Category", selection: $selectedCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
                         }
                     }
                     .pickerStyle(.segmented)
+                    .onAppear {
+                        taskFilter = .taskCategory
+                    }
+//                    .onDisappear {
+//                        taskFilter = .none
+//                    }
                 } else {
+//                    taskFilter = .taskCategory
                     Picker("Select Category", selection: $selectedCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
                         }
                     }
                     .pickerStyle(.menu)
+                    .onAppear {
+                        taskFilter = .taskCategory
+                    }
+//                    .onDisappear {
+//                        taskFilter = .none
+//                    }
                 }
             }
             .padding([.leading, .trailing], 20)
@@ -245,13 +321,17 @@ struct TaskView: View {
             leading:
                 Menu(content: {
                     Button {
-                        //
+                        taskFilter = .taskSchedule
+                        taskScheduleFilter = .upcoming
+//                        selectedCategory = "Upcoming"
                     } label: {
                         Text("Upcoming").tag("Upcoming")
                     }
                     
                     Button {
-                        selectedCategory = "Today"
+                        taskFilter = .taskSchedule
+                        taskScheduleFilter = .today
+//                        selectedCategory = "Today"
                     } label: {
                         Text("Today").tag("Today")
                     }
@@ -260,8 +340,25 @@ struct TaskView: View {
                     
                     Section("Status") {
                         NavigationLink("Completed") {
+//                            taskStatusFilter = .completed
+                            
                             CompletedTaskView(taskViewModel: taskViewModel)
                         }
+                        Button(action: {
+                            NavigationLink("Completed") {
+                                CompletedTaskView(taskViewModel: taskViewModel)
+                            }
+                        }, label: {
+                            Text("In Progress").tag("In Progress")
+                        })
+//                        .onAppear {
+//                            taskFilter = .taskStatus
+//                            taskStatusFilter = .completed
+//                        }
+//                        .onDisappear {
+//                            taskFilter = .taskCategory
+//                            taskStatusFilter = .none
+//                        }
 //                        Button {
 //                            selectedCategory = "Completed"
 //
@@ -270,7 +367,8 @@ struct TaskView: View {
 //                        }
                         
                         Button {
-                            selectedCategory = "In Progress"
+                            taskFilter = .taskStatus
+                            taskStatusFilter = .inProgress
                         } label: {
                             Text("In Progress").tag("In Progress")
                         }

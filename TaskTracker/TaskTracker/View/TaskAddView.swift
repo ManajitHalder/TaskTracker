@@ -120,7 +120,7 @@ struct TaskAddView: View {
                                                category: category,
                                                priority: priority,
                                                status: status,
-                                               dueDate: dueDate
+                                               dueDate: DateUtils.dateToString(dueDate)
                         )
                         
                         // Add the newTask to taskList
@@ -133,18 +133,13 @@ struct TaskAddView: View {
                                 to: nil,
                                 from: nil,
                                 for: nil)
-//                            UIApplication.shared.endEditing() // Call to dismiss keyboard
                             isFieldsEmptyAlertPresented = true
                         } else {
-//                            do {
                             taskViewModel.addTask(newTask)
                             
                             // Update the picker style based upon the count of all tasks in the task list
                             taskViewModel.useSegmentedPickerStyle = $taskViewModel.allTasks.count > 5 ? false : true
                             
-//                            } catch {
-//                                print("Add: \(error)")
-//                            }
                             // Go back to previous screen
                             presentationMode.wrappedValue.dismiss()
                         }

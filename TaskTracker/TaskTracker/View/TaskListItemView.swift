@@ -32,7 +32,7 @@ struct TaskListItemView: View {
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)
                 
-                Text("Due Date: \t\(task.dueDate)")
+                Text("Due Date: \t\(task.taskDate.dueDate)")
                     .font(.custom("Cochin", size: 12))
                     .fontDesign(.rounded)
                     .foregroundColor(.secondary)

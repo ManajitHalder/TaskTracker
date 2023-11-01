@@ -10,44 +10,38 @@ struct TaskView: View {
     @StateObject private var taskViewModel = TaskViewModel()
     
     @State private var selectedCategory = "All"
-//    @State private var isDrawerOpen = false
     @State private var isAddingTask = false
     @State private var alternateColor = false
     
     @State private var searchText: String = ""
     @State private var isSearching: Bool = false
-//    @FocusState private var isSearchFieldFocussed: Bool
     
-//    @State private var taskFilter: String = "category"
-    
-//    @State private var currentStatus = "In Progress"
+    @State private var isSegmentedPickerStyle: Bool = false
     
     @EnvironmentObject var userSettings: SettingsViewModel
     
     @State private var status: String = "Not Started"
-        
+    @State private var taskDate: TaskDate = TaskDate()
+            
     enum filterType {
         case taskCategory
         case taskSchedule
         case taskStatus
-        case none
     }
     
     enum filterStatus {
         case inProgress
-        case completed
-        case none
+//        case completed
     }
     
     enum taskScheduleEnum {
         case today
         case upcoming
-        case none
     }
     
-    @State private var taskFilter: filterType = .none
-    @State private var taskScheduleFilter: taskScheduleEnum = .none
-    @State private var taskStatusFilter: filterStatus = .none
+    @State private var taskFilter: filterType = .taskCategory
+    @State private var taskScheduleFilter: taskScheduleEnum = .today
+    @State private var taskStatusFilter: filterStatus = .inProgress
     
     var categories: [String] {
         var uniqueCategories = Set<String>()
@@ -81,55 +75,23 @@ struct TaskView: View {
             switch taskScheduleFilter {
             case .today:
                 let todaysDate = DateUtils.dateToString(Date())
-                return taskViewModel.allTasks.filter { $0.dueDate ==  todaysDate }
+                return taskViewModel.allTasks.filter { $0.taskDate.dueDate ==  todaysDate }
                 
             case .upcoming:
                 let todaysDate = DateUtils.dateToString(Date())
-                return taskViewModel.allTasks.filter { $0.dueDate >  todaysDate }
-            case .none:
-                print("taskSchedule: none")
+                return taskViewModel.allTasks.filter { $0.taskDate.dueDate >  todaysDate }
             }
             
         case .taskStatus:
             switch taskStatusFilter {
             case .inProgress:
                 return taskViewModel.allTasks.filter { $0.status == "In Progress" }
-            case .completed:
-                print("taskStatusFilter: Completed")
-            case .none:
-                print("taskStatusFilter: none")
+//            case .completed:
+//                print("taskStatusFilter: Completed")
             }
-        case .none:
-            print("taskFilter: none")
         }
-        
-//        if selectedCategory == "All" {
-//            return taskViewModel.allTasks
-//        } else if selectedCategory == "In Progress" {
-//            return taskViewModel.allTasks.filter { $0.status == selectedCategory }
-//        } else if selectedCategory == "Today" {
-////            print("dueDate: \($0.dueDate)")
-//            let todaysDate = DateUtils.dateToString(Date())
-//            print("todays date: \(todaysDate)")
-//
-////            let datess = dateFormatter.date(from: todaysDate)
-//
-//            return taskViewModel.allTasks.filter { $0.dueDate ==  todaysDate }
-//        } else if selectedCategory == "Upcoming" {
-//            print("Upcoming")
-//            //            print("dueDate: \($0.dueDate)")
-//            let todaysDate = DateUtils.dateToString(Date())
-//            print("todays date: \(todaysDate)")
-//
-//            //            let datess = dateFormatter.date(from: todaysDate)
-//
-//            return taskViewModel.allTasks.filter { $0.dueDate >  todaysDate }
-//        } else if selectedCategory == "Completed" {
-//            return Array(taskViewModel.completedTasks)
-//        } else {
-//            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
-//        }
-        return taskViewModel.allTasks
+
+//        return taskViewModel.allTasks
     }
     
     var body: some View {
@@ -144,36 +106,30 @@ struct TaskView: View {
                                 Section(taskItem.title) {
                                     Button {
                                         status = "In Progress"
-                                        taskViewModel.startTask(taskItem, status)
+                                        taskViewModel.startTask(taskItem, status, Date())
                                     } label: {
                                         Label("Start", systemImage: "play.fill")
-                                        
                                     }
                                     
                                     Button {
                                         status = "Completed"
-                                        taskViewModel.completeTask(taskItem, status)
-                                        taskViewModel.addCompletedTask(taskItem)
-                                        taskViewModel.deleteTask(taskItem)
+                                        taskViewModel.completeTask(taskItem, status, Date())
+                                        // Update the picker style based upon the count of all tasks in the task list
+                                        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                                     } label: {
                                         Label("Complete", systemImage: "c.square.fill")
                                     }
                                 }
                             }
-//                            .navigationTitle("")
                     }
-//                    .navigationTitle(task.title)
                 }
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
-                
-//                .navigationTitle("")
             }
             .searchable(text: $taskViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
             
             HStack {
                 if taskViewModel.useSegmentedPickerStyle {
-//                    taskFilter = .taskCategory
                     Picker("Select Category", selection: $selectedCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
@@ -183,11 +139,10 @@ struct TaskView: View {
                     .onAppear {
                         taskFilter = .taskCategory
                     }
-//                    .onDisappear {
-//                        taskFilter = .none
-//                    }
+                    .onChange(of: selectedCategory) { _ in
+                        taskFilter = .taskCategory
+                    }
                 } else {
-//                    taskFilter = .taskCategory
                     Picker("Select Category", selection: $selectedCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
@@ -197,59 +152,16 @@ struct TaskView: View {
                     .onAppear {
                         taskFilter = .taskCategory
                     }
-//                    .onDisappear {
-//                        taskFilter = .none
-//                    }
+                    .onChange(of: selectedCategory) { _ in
+                        taskFilter = .taskCategory
+                    }
                 }
             }
             .padding([.leading, .trailing], 20)
             .padding([.top, .bottom], 10)
-            .background(Color.indigo.opacity(0.5))
+            .background(Color.orange.opacity(0.2))
             
             HStack {
-                
-//                ZStack {
-//                    Menu(content: {
-//                        Button {
-//                            //
-//                        } label: {
-//                            Text("Upcoming").tag("Upcoming")
-//                        }
-//
-//                        Button {
-//                            selectedCategory = "Today"
-//                        } label: {
-//                            Text("Today").tag("Today")
-//                        }
-//
-//                        Divider()
-//
-//                        Section("Status") {
-//                            Button {
-//                                selectedCategory = "Completed"
-//                            } label: {
-//                                Text("Completed").tag("Completed")
-//                            }
-//
-//                            Button {
-//                                selectedCategory = "In Progress"
-//                            } label: {
-//                                Text("In Progress").tag("In Progress")
-//                            }
-//                        }
-//                    }, label: {
-//                        Label("Menu", systemImage: "line.3.horizontal")
-//                            .font(.custom("Cochin", size: 20))
-//                            .foregroundColor(.black)
-//                    })
-//                    .padding(.leading, 20)
-//                    .padding(.top, 30)
-//                    .frame(width: 10, height: 15)
-//                    .padding()
-//                    .clipShape(Rectangle())
-//                    .padding(.bottom, 20)
-//                }
-//                .padding()
                 
                 Spacer()
                 
@@ -278,41 +190,6 @@ struct TaskView: View {
                 }
                 
                 Spacer()
-                
-//                NavigationStack {
-////                    ZStack {
-//                        Menu {
-//
-//                            NavigationLink {
-//                                EmptyView()
-//                            } label: {
-//                                Text("Settings")
-//                            }
-//
-//                            Divider()
-//
-//                            Button {
-//                                //
-//                            } label: {
-//                                Text("item 3")
-//                            }
-//
-//
-//                        } label: {
-//                            Label("Settings", systemImage: "gear")
-//                                .font(.custom("Cochin", size: 20))
-//                                .rotationEffect(.degrees(90))
-//                                .foregroundColor(.black)
-//                        }
-////                        .padding(.trailing, 20)
-////                        .padding(.top, 40)
-////                        .frame(width: 10, height: 25)
-////                        .padding()
-////                        .clipShape(Rectangle())
-////                        .padding(.bottom, 20)
-////                    }
-////                    .padding()
-//                }
             }
             .frame(maxHeight: 40)
             .background(.bar)
@@ -323,7 +200,6 @@ struct TaskView: View {
                     Button {
                         taskFilter = .taskSchedule
                         taskScheduleFilter = .upcoming
-//                        selectedCategory = "Upcoming"
                     } label: {
                         Text("Upcoming").tag("Upcoming")
                     }
@@ -331,7 +207,6 @@ struct TaskView: View {
                     Button {
                         taskFilter = .taskSchedule
                         taskScheduleFilter = .today
-//                        selectedCategory = "Today"
                     } label: {
                         Text("Today").tag("Today")
                     }
@@ -340,31 +215,8 @@ struct TaskView: View {
                     
                     Section("Status") {
                         NavigationLink("Completed") {
-//                            taskStatusFilter = .completed
-                            
                             CompletedTaskView(taskViewModel: taskViewModel)
                         }
-                        Button(action: {
-                            NavigationLink("Completed") {
-                                CompletedTaskView(taskViewModel: taskViewModel)
-                            }
-                        }, label: {
-                            Text("In Progress").tag("In Progress")
-                        })
-//                        .onAppear {
-//                            taskFilter = .taskStatus
-//                            taskStatusFilter = .completed
-//                        }
-//                        .onDisappear {
-//                            taskFilter = .taskCategory
-//                            taskStatusFilter = .none
-//                        }
-//                        Button {
-//                            selectedCategory = "Completed"
-//
-//                        } label: {
-//                            Text("Completed").tag("Completed")
-//                        }
                         
                         Button {
                             taskFilter = .taskStatus
@@ -398,7 +250,7 @@ struct TaskView: View {
     }
     
     func getListRowColor(_ color: Bool) -> Color {
-        return Color.black.opacity(0.03)
+        return Color.orange.opacity(0.08)
     }
     
     // Delete task at swipe from right to left.
@@ -406,7 +258,7 @@ struct TaskView: View {
         taskViewModel.allTasks.remove(atOffsets: offset)
         
         // Update the picker style based upon the count of all tasks in the task list
-        taskViewModel.useSegmentedPickerStyle = $taskViewModel.allTasks.count > 5 ? false : true
+        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
     }
 }
 

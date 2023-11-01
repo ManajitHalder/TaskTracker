@@ -98,7 +98,7 @@ struct TaskStaticView: View {
                         
                         Divider()
                         
-                        Text(task.dueDate)
+                        Text(task.taskDate.startDate)
                             .foregroundColor(.black)
                             .font(.custom("Cochin", size: 15))
                     }
@@ -112,7 +112,7 @@ struct TaskStaticView: View {
                         
                         Divider()
                         
-                        Text(task.dueDate)
+                        Text(task.taskDate.dueDate)
                             .foregroundColor(.black)
                             .font(.custom("Cochin", size: 15))
                     }
@@ -126,7 +126,7 @@ struct TaskStaticView: View {
                         
                         Divider()
                         
-                        Text(task.dueDate)
+                        Text(task.taskDate.finisDate)
                             .foregroundColor(.black)
                             .font(.custom("Cochin", size: 15))
                     }

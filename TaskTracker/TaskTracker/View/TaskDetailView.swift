@@ -37,6 +37,16 @@ struct TaskDetailView: View {
         "Household"
     ]
     
+    var categories: [String] {
+        var uniqueCategories = Set<String>()
+        
+        taskViewModel.allTasks.forEach { task in
+            uniqueCategories.insert(task.category)
+        }
+        
+        return Array(uniqueCategories) + ["All"]
+    }
+    
     var body: some View {
         Form {
 //            Section(header: Text("Task Title / Heading")) {
@@ -59,6 +69,7 @@ struct TaskDetailView: View {
                             updates.append(Update(text: statusUpdate))
                             statusUpdate = ""
                             status = "In Progress"
+                            taskViewModel.startTask(task, status, Date())
                         }
                     } label: {
                         Image(systemName: "plus")
@@ -134,7 +145,7 @@ struct TaskDetailView: View {
             category = task.category
             priority = task.priority
             status = task.status
-            dueDate = DateUtils.stringToDate(task.dueDate)!
+            dueDate = DateUtils.stringToDate(task.taskDate.dueDate)!
             updates = task.updates
         }
         .navigationTitle("Task")
@@ -156,7 +167,7 @@ struct TaskDetailView: View {
                                        category: category,
                                        priority: priority,
                                        status: status,
-                                        dueDate: DateUtils.dateToString(dueDate),
+                                        taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(dueDate), finisDate: ""),
                                        updates: updates
                     )
                     
@@ -165,13 +176,17 @@ struct TaskDetailView: View {
                     task.category = category
                     task.priority = priority
                     task.status = status
-                    task.dueDate = DateUtils.dateToString(dueDate)
+                    task.taskDate.dueDate = DateUtils.dateToString(dueDate)
                     task.updates = updates
                     
+                    if status == "In Progress" {
+                        taskViewModel.startTask(task, status, Date())
+                    }
                     if status == "Completed" {
-                        taskViewModel.addCompletedTask(task)
-
-                        taskViewModel.deleteTask(task)
+                        taskViewModel.completeTask(task, status, Date())
+                        
+                        // Update the picker style based upon the count of all tasks in the task list
+                        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                     }
                     
                     if title.isEmpty || description.isEmpty {

@@ -10,33 +10,24 @@ import Combine
 final class TaskManager {
     func getAllTasks() -> [TaskItem] {
         [
-            TaskItem(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Task 5", description: "", category: "Work", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Task 7", description: "", category: "Shopping", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description.", description: "Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description.", category: "Hobby", priority: "High", status: "Completed", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "Cook Khichdi", description: "Prepare Khichdi for dinner", category: "Other", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date())),
-            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Not Started", dueDate: DateUtils.dateToString(Date()), updates: [Update(text: "Started"), Update(text: "Preapared detailed plan"), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing next week")]),
-            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Completed", dueDate: DateUtils.dateToString(Date()), updates: [Update(text: "Started"), Update(text: "Learning so many things on iOS and Swift. Going to implement backend next week."), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing soon")])
+            TaskItem(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Task 5", description: "", category: "Work", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Task 7", description: "", category: "Shopping", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description.", description: "Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description. Is not displaying complete description. I want to display complete description.", category: "Hobby", priority: "High", status: "Completed", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "Cook Khichdi", description: "Prepare Khichdi for dinner", category: "Other", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: "")),
+            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date())), updates: [Update(text: "Started"), Update(text: "Preapared detailed plan"), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing next week")]),
+            TaskItem(title: "I am loving this app.", description: "This app has boosted my confidence of app development using SwiftUI, Vapor, handing greate amout data, apiary, REST API, PostgreSQL.", category: "Work", priority: "High", status: "Completed", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finisDate: ""), updates: [Update(text: "Started"), Update(text: "Learning so many things on iOS and Swift. Going to implement backend next week."), Update(text: "Going good"), Update(text: "Learned so many things"), Update(text: "Finishing soon")])
         ]
     }
 }
 
 final class TaskViewModel: ObservableObject {
     
-//    @Published var allTasks: [TaskItem] = [
-//        TaskItem(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", dueDate: Date()),
-//        TaskItem(title: "Task 5", description: "", category: "Work", priority: "High", status: "Not Started", dueDate: Date()),
-//        TaskItem(title: "Task 7", description: "", category: "Shopping", priority: "High", status: "Not Started", dueDate: Date()),
-//        TaskItem(title: "Task 9", description: "", category: "Wishlist", priority: "High", status: "Not Started", dueDate: Date()),
-//        TaskItem(title: "Task 12", description: "", category: "Travel", priority: "High", status: "Not Started", dueDate: Date()),
-//        TaskItem(title: "Task 15", description: "", category: "Hobby", priority: "High", status: "Not Started", dueDate: Date())
-//    ]
-    
     @Published var allTasks: [TaskItem] = []
     @Published private(set) var filteredTasks: [TaskItem] = []
-    @Published private(set) var completedTasks = Set<TaskItem>() // To maintain a list of completed tasks.
+    @Published var completedTasks: [TaskItem] = [] // To maintain a list of completed tasks.
     @Published var searchText: String = ""
     @Published var useSegmentedPickerStyle: Bool = false
     
@@ -109,7 +100,7 @@ final class TaskViewModel: ObservableObject {
                 allTasks[taskIndex].category = task.category
                 allTasks[taskIndex].priority = task.priority
                 allTasks[taskIndex].status = task.status
-                allTasks[taskIndex].dueDate = task.dueDate
+                allTasks[taskIndex].taskDate.dueDate = task.taskDate.dueDate
                 allTasks[taskIndex].updates = task.updates
             }
         }
@@ -130,28 +121,32 @@ final class TaskViewModel: ObservableObject {
     func addCompletedTask(_ completedTask: TaskItem) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.completedTasks.insert(completedTask)
+            self.completedTasks.append(completedTask)
         }
     }
     
     //MARK: - CONTEXT MENU OPERATIONS
     
     // Start task
-    func startTask(_ task: TaskItem, _ status: String) {
+    func startTask(_ task: TaskItem, _ status: String, _ startDate: Date) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if let taskIndex = allTasks.firstIndex(where:  { $0.id == task.id }) {
                 allTasks[taskIndex].status = status
+                allTasks[taskIndex].taskDate.startDate = DateUtils.dateToString(startDate)
             }
         }
     }
     
     // Complete task
-    func completeTask(_ task: TaskItem, _ status: String) {
+    func completeTask(_ task: TaskItem, _ status: String, _ finishDate: Date) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             if let taskIndex = allTasks.firstIndex(where: { $0.id == task.id }) {
                 allTasks[taskIndex].status = status
+                allTasks[taskIndex].taskDate.finisDate = DateUtils.dateToString(finishDate)
+                self.addCompletedTask(allTasks[taskIndex]) // Add the task to the completed task list
+                self.deleteTask(allTasks[taskIndex]) // Delete the task from the allTasks list
             }
         }
     }

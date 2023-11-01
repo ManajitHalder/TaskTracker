@@ -19,7 +19,7 @@ struct TaskAddView: View {
     
     @FocusState private var focusedField: Int? // To autofocus the mouse in the first text field.
     @State private var isFieldsEmptyAlertPresented: Bool = false // To present Save Alert
-
+    
     func resetInputFields() {
         title = ""
         description = ""
@@ -27,6 +27,16 @@ struct TaskAddView: View {
         priority = "High"
         status = "Not Started"
         dueDate = Date()
+    }
+    
+    var categories: [String] {
+        var uniqueCategories = Set<String>()
+        
+        taskViewModel.allTasks.forEach { task in
+            uniqueCategories.insert(task.category)
+        }
+        
+        return Array(uniqueCategories) + ["All"]
     }
     
     var body: some View {
@@ -120,7 +130,7 @@ struct TaskAddView: View {
                                                category: category,
                                                priority: priority,
                                                status: status,
-                                               dueDate: DateUtils.dateToString(dueDate)
+                                               taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(dueDate), finisDate: "")
                         )
                         
                         // Add the newTask to taskList
@@ -138,7 +148,7 @@ struct TaskAddView: View {
                             taskViewModel.addTask(newTask)
                             
                             // Update the picker style based upon the count of all tasks in the task list
-                            taskViewModel.useSegmentedPickerStyle = $taskViewModel.allTasks.count > 5 ? false : true
+                            taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                             
                             // Go back to previous screen
                             presentationMode.wrappedValue.dismiss()

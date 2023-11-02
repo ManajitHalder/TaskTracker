@@ -7,32 +7,34 @@
 import SwiftUI
 
 struct TaskAddView: View {
-    @ObservedObject var taskViewModel: TaskViewModel
+    @ObservedObject var taskMainViewModel: TaskMainViewModel
     @Environment(\.presentationMode) var presentationMode
     
     @State private var title: String = ""
     @State private var description: String = ""
-    @State private var category: String = "Personal"
-    @State private var priority: String = "High"
-    @State private var status: String = "Not Started"
+    @State private var category: String = TaskCategory.personal.name()
+    @State private var priority: String = TaskPriority.high.name()
+    @State private var status: String = TaskStatus.notStarted.name()
     @State private var dueDate: Date = Date()
     
     @FocusState private var focusedField: Int? // To autofocus the mouse in the first text field.
     @State private var isFieldsEmptyAlertPresented: Bool = false // To present Save Alert
     
+//    var taskCategory: TaskCategory = .personal
+    
     func resetInputFields() {
         title = ""
         description = ""
-        category = "Personal"
-        priority = "High"
-        status = "Not Started"
+        category = TaskCategory.personal.name()
+        priority = TaskPriority.high.name()
+        status = TaskStatus.notStarted.name()
         dueDate = Date()
     }
     
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
-        taskViewModel.allTasks.forEach { task in
+        taskMainViewModel.allTasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
         
@@ -58,38 +60,25 @@ struct TaskAddView: View {
             
             Section(header: Text("Task Category / Type")) {
                 Picker("Category", selection: $category) {
-                    Text("Personal").tag("Personal")
-                    Text("Study").tag("Study")
-                    Text("Work").tag("Work")
-                    Text("Health & Fitness").tag("Health & Fitness")
-                    Text("Travel").tag("Travel")
-                    Text("Entertainment").tag("Entertainment")
-                    Text("Shopping").tag("Shopping")
-                    Text("Hobby").tag("Hobby")
-                    Text("Wishlist").tag("Wishlist")
-                    Text("Household").tag("Household")
+                    ForEach(TaskCategory.allCases, id: \.self) { taskCategory in
+                        Text(taskCategory.name()).tag(taskCategory.name())
+                    }
                 }
             }
             
             Section(header: Text("Task Priority")) {
                 Picker("Priority", selection: $priority) {
-                    Text("High").tag("High")
-                    Text("Medium").tag("Medium")
-                    Text("Low").tag("Low")
-                    Text("Urgent").tag("Urgent")
-                    Text("Routine").tag("Routine")
-                    Text("Critical").tag("Critical")
+                    ForEach(TaskPriority.allCases, id: \.self) { taskPriority in
+                        Text(taskPriority.name()).tag(taskPriority.name())
+                    }
                 }
             }
             
             Section(header: Text("Task Status")) {
                 Picker("Status", selection: $status) {
-                    Text("Not Started").tag("Not Started")
-                    Text("In Progress").tag("In Progress")
-                    Text("Completed").tag("Completed")
-                    Text("Cancelled").tag("Cancelled")
-                    Text("Deferred").tag("Deferred")
-                    Text("Overdue").tag("Overdue")
+                    ForEach(TaskStatus.allCases, id: \.self) { taskStatus in
+                        Text(taskStatus.name()).tag(taskStatus.name())
+                    }
                 }
             }
             Section(header: Text("Task Due Date")) {
@@ -101,6 +90,9 @@ struct TaskAddView: View {
                 .datePickerStyle(.compact)
             }
             .frame(maxHeight: 80)
+            .onTapGesture {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            }
         }
         .onAppear {
             focusedField = 0
@@ -145,10 +137,10 @@ struct TaskAddView: View {
                                 for: nil)
                             isFieldsEmptyAlertPresented = true
                         } else {
-                            taskViewModel.addTask(newTask)
+                            taskMainViewModel.addTask(newTask)
                             
                             // Update the picker style based upon the count of all tasks in the task list
-                            taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
+                            taskMainViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                             
                             // Go back to previous screen
                             presentationMode.wrappedValue.dismiss()
@@ -180,6 +172,6 @@ struct TaskAddView: View {
 
 struct TaskAddView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskAddView(taskViewModel: TaskViewModel())
+        TaskAddView(taskMainViewModel: TaskMainViewModel())
     }
 }

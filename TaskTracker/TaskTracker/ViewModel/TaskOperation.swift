@@ -23,7 +23,7 @@ final class TaskManager {
     }
 }
 
-final class TaskViewModel: ObservableObject {
+final class TaskMainViewModel: ObservableObject {
     
     @Published var allTasks: [TaskItem] = []
     @Published private(set) var filteredTasks: [TaskItem] = []
@@ -86,7 +86,7 @@ final class TaskViewModel: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            self.allTasks.append(task)
+            self.allTasks.insert(task, at: 0)
         }
     }
     
@@ -121,7 +121,7 @@ final class TaskViewModel: ObservableObject {
     func addCompletedTask(_ completedTask: TaskItem) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.completedTasks.append(completedTask)
+            self.completedTasks.insert(completedTask, at: 0)
         }
     }
     

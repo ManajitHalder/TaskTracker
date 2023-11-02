@@ -1,13 +1,13 @@
 //
-//  TaskView.swift
+//  TaskMainView.swift
 //  
 //  Created by Manajit Halder on 09/10/23 using Swift 5.0 on MacOS 13.4
 //  
 
 import SwiftUI
 
-struct TaskView: View {
-    @StateObject private var taskViewModel = TaskViewModel()
+struct TaskMainView: View {
+    @StateObject private var taskMainViewModel = TaskMainViewModel()
     
     @State private var selectedCategory = "All"
     @State private var isAddingTask = false
@@ -20,7 +20,7 @@ struct TaskView: View {
     
     @EnvironmentObject var userSettings: SettingsViewModel
     
-    @State private var status: String = "Not Started"
+    @State private var status: String = TaskStatus.notStarted.name()
     @State private var taskDate: TaskDate = TaskDate()
             
     enum filterType {
@@ -46,7 +46,7 @@ struct TaskView: View {
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
-        taskViewModel.allTasks.forEach { task in
+        taskMainViewModel.allTasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
         
@@ -55,9 +55,9 @@ struct TaskView: View {
     
     var filteredTasks: [TaskItem] {
         if selectedCategory == "All" {
-            return taskViewModel.allTasks
+            return taskMainViewModel.allTasks
         } else {
-            return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+            return taskMainViewModel.allTasks.filter { $0.category == selectedCategory }
         }
     }
     
@@ -66,56 +66,56 @@ struct TaskView: View {
         switch taskFilter {
         case .taskCategory:
             if selectedCategory == "All" {
-                return taskViewModel.allTasks
+                return taskMainViewModel.allTasks
             } else {
-                return taskViewModel.allTasks.filter { $0.category == selectedCategory }
+                return taskMainViewModel.allTasks.filter { $0.category == selectedCategory }
             }
             
         case .taskSchedule:
             switch taskScheduleFilter {
             case .today:
                 let todaysDate = DateUtils.dateToString(Date())
-                return taskViewModel.allTasks.filter { $0.taskDate.dueDate ==  todaysDate }
+                return taskMainViewModel.allTasks.filter { $0.taskDate.dueDate ==  todaysDate }
                 
             case .upcoming:
                 let todaysDate = DateUtils.dateToString(Date())
-                return taskViewModel.allTasks.filter { $0.taskDate.dueDate >  todaysDate }
+                return taskMainViewModel.allTasks.filter { $0.taskDate.dueDate >  todaysDate }
             }
             
         case .taskStatus:
             switch taskStatusFilter {
             case .inProgress:
-                return taskViewModel.allTasks.filter { $0.status == "In Progress" }
+                return taskMainViewModel.allTasks.filter { $0.status == TaskStatus.inProgress.name() }
 //            case .completed:
 //                print("taskStatusFilter: Completed")
             }
         }
 
-//        return taskViewModel.allTasks
+//        return taskMainViewModel.allTasks
     }
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: 10) {
             List {
-                ForEach(taskViewModel.isSearching ? taskViewModel.filteredTasks : self.filterTasks(), id: \.self) { taskItem in
-                    NavigationLink(destination: TaskDetailView(taskViewModel: taskViewModel, task: taskItem)) {
+                ForEach(taskMainViewModel.isSearching ? taskMainViewModel.filteredTasks : self.filterTasks(), id: \.self) { taskItem in
+                    NavigationLink(destination: TaskDetailView(taskMainViewModel: taskMainViewModel, task: taskItem)) {
                         TaskListItemView(task: taskItem)
                             .contextMenu {
                                 
                                 Section(taskItem.title) {
                                     Button {
-                                        status = "In Progress"
-                                        taskViewModel.startTask(taskItem, status, Date())
+                                        status = TaskStatus.inProgress.name()
+                                        taskMainViewModel.startTask(taskItem, status, Date())
                                     } label: {
                                         Label("Start", systemImage: "play.fill")
                                     }
                                     
                                     Button {
-                                        status = "Completed"
-                                        taskViewModel.completeTask(taskItem, status, Date())
+                                        status = TaskStatus.completed.name()
+                                        taskMainViewModel.completeTask(taskItem, status, Date())
                                         // Update the picker style based upon the count of all tasks in the task list
-                                        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
+                                        taskMainViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                                     } label: {
                                         Label("Complete", systemImage: "c.square.fill")
                                     }
@@ -126,10 +126,10 @@ struct TaskView: View {
                 .onDelete(perform: deleteTask)
                 .listRowBackground(getListRowColor(alternateColor))
             }
-            .searchable(text: $taskViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
+            .searchable(text: $taskMainViewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search Task")
             
             HStack {
-                if taskViewModel.useSegmentedPickerStyle {
+                if taskMainViewModel.useSegmentedPickerStyle {
                     Picker("Select Category", selection: $selectedCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
@@ -175,7 +175,7 @@ struct TaskView: View {
                     Button(action: {
                         isAddingTask.toggle()
                     }) {
-                        NavigationLink(destination: TaskAddView(taskViewModel: taskViewModel)) {
+                        NavigationLink(destination: TaskAddView(taskMainViewModel: taskMainViewModel)) {
                             Image(systemName: "plus")
                                 .frame(width: 30, height: 30)
                                 .foregroundColor(.white)
@@ -215,7 +215,7 @@ struct TaskView: View {
                     
                     Section("Status") {
                         NavigationLink("Completed") {
-                            CompletedTaskView(taskViewModel: taskViewModel)
+                            CompletedTaskView(taskMainViewModel: taskMainViewModel)
                         }
                         
                         Button {
@@ -255,16 +255,16 @@ struct TaskView: View {
     
     // Delete task at swipe from right to left.
     func deleteTask(at offset: IndexSet) {
-        taskViewModel.allTasks.remove(atOffsets: offset)
+        taskMainViewModel.allTasks.remove(atOffsets: offset)
         
         // Update the picker style based upon the count of all tasks in the task list
-        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
+        taskMainViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
     }
 }
 
-struct TaskView_Previews: PreviewProvider {
+struct TaskMainView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskView()
+        TaskMainView()
     }
 }
 

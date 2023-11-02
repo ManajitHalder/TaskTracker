@@ -7,16 +7,16 @@
 import SwiftUI
 
 struct TaskDetailView: View {
-    @ObservedObject var taskViewModel: TaskViewModel
+    @ObservedObject var taskMainViewModel: TaskMainViewModel
     @Environment(\.presentationMode) var presentationMode
 
     @State var task: TaskItem
 
     @State private var title: String = ""
     @State private var description: String = ""
-    @State private var category: String = "Personal"
-    @State private var priority: String = "High"
-    @State private var status: String = "Not Started"
+    @State private var category: String = TaskCategory.personal.name()
+    @State private var priority: String = TaskPriority.high.name()
+    @State private var status: String = TaskStatus.notStarted.name()
     @State private var dueDate: Date = Date()
     @State private var updates: [Update] = []
     
@@ -24,23 +24,10 @@ struct TaskDetailView: View {
 
     @State private var isEmptyFieldPresented: Bool = false
     
-    var taskCategory: [String] = [
-        "Personal",
-        "Study",
-        "Work",
-        "Health & Fitness",
-        "Travel",
-        "Entertainment",
-        "Shopping",
-        "Hobby",
-        "Wishlist",
-        "Household"
-    ]
-    
     var categories: [String] {
         var uniqueCategories = Set<String>()
         
-        taskViewModel.allTasks.forEach { task in
+        taskMainViewModel.allTasks.forEach { task in
             uniqueCategories.insert(task.category)
         }
         
@@ -68,8 +55,8 @@ struct TaskDetailView: View {
                         if !statusUpdate.isEmpty {
                             updates.append(Update(text: statusUpdate))
                             statusUpdate = ""
-                            status = "In Progress"
-                            taskViewModel.startTask(task, status, Date())
+                            status = TaskStatus.inProgress.name()
+                            taskMainViewModel.startTask(task, status, Date())
                         }
                     } label: {
                         Image(systemName: "plus")
@@ -86,43 +73,27 @@ struct TaskDetailView: View {
 //            Section(header: Text("Task Category / Type")) {
             Section {
                 Picker("Category", selection: $category) {
-//                    ForEach(taskCategory, id: \.self) { category in
-//                        Text(category).tag(category)
-//                    }
-                    Text("Personal").tag("Personal")
-                    Text("Study").tag("Study")
-                    Text("Work").tag("Work")
-                    Text("Health & Fitness").tag("Health & Fitness")
-                    Text("Travel").tag("Travel")
-                    Text("Entertainment").tag("Entertainment")
-                    Text("Shopping").tag("Shopping")
-                    Text("Hobby").tag("Hobby")
-                    Text("Wishlist").tag("Wishlist")
-                    Text("Household").tag("Household")
+                    ForEach(TaskCategory.allCases, id: \.self) { taskCategory in
+                        Text(taskCategory.name()).tag(taskCategory.name())
+                    }
                 }
             }
             
 //            Section(header: Text("Task Priority")) {
             Section {
                 Picker("Priority", selection: $priority) {
-                    Text("High").tag("High")
-                    Text("Medium").tag("Medium")
-                    Text("Low").tag("Low")
-                    Text("Urgent").tag("Urgent")
-                    Text("Routine").tag("Routine")
-                    Text("Critical").tag("Critical")
+                    ForEach(TaskPriority.allCases, id: \.self) { taskPriority in
+                        Text(taskPriority.name()).tag(taskPriority.name())
+                    }
                 }
             }
             
 //            Section(header: Text("Task Status")) {
             Section {
                 Picker("Status", selection: $status) {
-                    Text("Not Started").tag("Not Started")
-                    Text("In Progress").tag("In Progress")
-                    Text("Completed").tag("Completed")
-                    Text("Cancelled").tag("Cancelled")
-                    Text("Deferred").tag("Deferred")
-                    Text("Overdue").tag("Overdue")
+                    ForEach(TaskStatus.allCases, id: \.self) { taskStatus in
+                        Text(taskStatus.name()).tag(taskStatus.name())
+                    }
                 }
             }
             
@@ -179,14 +150,14 @@ struct TaskDetailView: View {
                     task.taskDate.dueDate = DateUtils.dateToString(dueDate)
                     task.updates = updates
                     
-                    if status == "In Progress" {
-                        taskViewModel.startTask(task, status, Date())
+                    if status == TaskStatus.inProgress.name() {
+                        taskMainViewModel.startTask(task, status, Date())
                     }
-                    if status == "Completed" {
-                        taskViewModel.completeTask(task, status, Date())
+                    if status == TaskStatus.completed.name() {
+                        taskMainViewModel.completeTask(task, status, Date())
                         
                         // Update the picker style based upon the count of all tasks in the task list
-                        taskViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
+                        taskMainViewModel.useSegmentedPickerStyle = categories.count > 6 ? false : true
                     }
                     
                     if title.isEmpty || description.isEmpty {
@@ -201,7 +172,7 @@ struct TaskDetailView: View {
                         
                         isEmptyFieldPresented = true
                     } else {
-                        taskViewModel.updateTask(newTask)
+                        taskMainViewModel.updateTask(newTask)
                         // Go back to previous screen
                         presentationMode.wrappedValue.dismiss()
                     }
@@ -215,6 +186,6 @@ struct TaskDetailView: View {
 
 struct TaskDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        TaskDetailView(taskViewModel: TaskViewModel(), task: TaskItem())
+        TaskDetailView(taskMainViewModel: TaskMainViewModel(), task: TaskItem())
     }
 }

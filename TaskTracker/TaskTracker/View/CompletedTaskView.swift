@@ -7,13 +7,13 @@
 import SwiftUI
 
 struct CompletedTaskView: View {
-    @ObservedObject var taskViewModel: TaskViewModel
+    @ObservedObject var taskMainViewModel: TaskMainViewModel
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack {
             List {
-                ForEach(Array(taskViewModel.completedTasks), id: \.self) { task in
+                ForEach(Array(taskMainViewModel.completedTasks), id: \.self) { task in
                     TaskStaticView(task: task)
                 }
                 .listStyle(.sidebar)
@@ -36,6 +36,6 @@ struct CompletedTaskView: View {
 
 struct CompletedTaskView_Previews: PreviewProvider {
     static var previews: some View {
-        CompletedTaskView(taskViewModel: TaskViewModel())
+        CompletedTaskView(taskMainViewModel: TaskMainViewModel())
     }
 }

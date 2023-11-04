@@ -22,7 +22,7 @@ struct TaskMainView: View {
     
     @State private var status: String = TaskStatus.notStarted.name()
     @State private var taskDate: TaskDate = TaskDate()
-            
+                
     enum filterType {
         case taskCategory
         case taskSchedule
@@ -234,11 +234,7 @@ struct TaskMainView: View {
                 Menu {
                     NavigationLink("Settings") {
                         SettingsView()
-                    }
-                    
-                    Button {
-                    } label: {
-                        Text("item1")
+                            .environmentObject(userSettings)
                     }
                 } label: {
                     Label("", systemImage: "ellipsis")

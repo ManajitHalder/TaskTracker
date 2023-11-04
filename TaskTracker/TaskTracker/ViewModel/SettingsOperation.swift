@@ -6,6 +6,16 @@
 
 import Foundation
 
+enum LanguageOptions: String, CaseIterable {
+    case bengali
+    case hindi
+    case kannada
+    case english
+}
+
 final class SettingsViewModel: ObservableObject {
     @Published var isDarkModeEnabled: Bool = false
+    @Published var fontSize: CGFloat = 16
+    @Published var language: LanguageOptions = .bengali
+    @Published var isNotificationEnabled: Bool = false
 }

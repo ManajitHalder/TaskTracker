@@ -5,6 +5,7 @@
 //  
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct TaskTrackerApp: App {

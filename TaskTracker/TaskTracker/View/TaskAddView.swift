@@ -122,7 +122,7 @@ struct TaskAddView: View {
                                                category: category,
                                                priority: priority,
                                                status: status,
-                                               taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(dueDate), finisDate: "")
+                                               taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(dueDate), finishDate: "")
                         )
                         
                         // Add the newTask to taskList

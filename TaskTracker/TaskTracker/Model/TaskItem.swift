@@ -14,7 +14,7 @@ struct Update: Identifiable, Hashable {
 struct TaskDate: Hashable {
     var startDate: String = ""
     var dueDate: String = ""
-    var finisDate: String = ""
+    var finishDate: String = ""
 }
 
 struct TaskItem: Identifiable, Hashable {

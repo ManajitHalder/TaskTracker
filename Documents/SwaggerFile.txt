@@ -1,0 +1,158 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: "Task Tracker API"
+  description:  Allow users to easily create and categorize tasks. Include fields for task names, due dates, priorities, and descriptions. 
+                Enable users to create and organize task lists or categories, such as work, home, or personal. 
+                Users can switch between lists to manage different aspects of their lives.
+  license:
+    name: MIT
+    url: https://github.com/apiaryio/polls-api/blob/master/LICENSE
+host: tasktracker.apiblueprint.org
+basePath: /v1
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /tasks:
+    x-summary: Task List
+    get:
+      summary: Get the list of tasks
+      description: Gets the list of Tasks
+      produces: 
+        - application/json
+      responses:
+        200:
+          description: Successful Response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/TaskItem'
+          examples:
+            application/json:
+              - id: "1"
+                title: "Start new project"
+                description: "Start next iOS project"
+                category: "Work"
+                priority: "High"
+                status: "Not Started"
+                taskDate:
+                  startDate: "8 Nov 2023"
+                  dueDate: "23 Nov 2023"
+                  finsihDate: ""
+                updates:
+                  - id: "1"
+                    text: Started
+                  - id: "2"
+                    text: Added project requirement
+                  - id: "3"
+                    text: Started coding
+                  - id: "4"
+                    text: Testing
+                  - id: "5"
+                    text: Completed
+
+    post:
+      description: >-
+        You may create your own task. It takes a JSON object containing a 
+        task details.
+      summary: Create a new task
+      parameters:
+        - name: task
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TaskItem'
+      responses:
+        201:
+          description: Task created
+          schema:
+            $ref: '#/definitions/TaskItem'
+            
+          examples:
+            application/json:
+              - id: "2"
+                title: "Go for shopping"
+                description: "Go for buying new Cars"
+                category: "Personal"
+                priority: "Ciritcal"
+                status: "Not Started"
+                taskDate:
+                  startDate: ""
+                  dueDate: "18 Dec 2023"
+                  finsihDate: ""
+                updates: []
+                
+definitions:
+  Updates:
+    title: Updates
+    type: object
+    properties:
+      id: 
+        type: string
+        format: uuid
+      text:
+        type: string
+    required:
+      - text
+    
+  TaskDate:
+    title: TaskDate
+    type: object
+    properties:
+      startDate:
+        type: string
+      dueDate:
+        type: string
+      finisDate:
+        type: string
+          
+  TaskItem:
+    title: TaskItem
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+      title:
+        type: string
+      description:
+        type: string
+      category:
+        type: string
+      priority:
+        type: string
+      status:
+        type: string
+      taskDate:
+        $ref: '#/definitions/TaskDate'
+      updates:
+        type: array
+        items:
+          $ref: '#/definitions/Updates'
+    required:
+      - title
+
+    example:
+      id: "1"
+      title: "Start new task"
+      description: "Start next task activity"
+      category: "Personal"
+      priority: "Normal"
+      status: "In Progress"
+      taskDate:
+        startDate: "8 Nov 2023"
+        dueDate: "23 Nov 2023"
+        finsihDate: "22 Nov 2023"
+      updates:
+        - id: "1"
+          text: "Start new project"
+        - id: "2"
+          text: "Do the task"
+        - id: "3"
+          text: "Task completed"
+          
+

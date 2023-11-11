@@ -7,7 +7,7 @@
 import Foundation
 
 struct Update: Identifiable, Hashable {
-    var id = UUID()
+    var id = UUID().uuidString
     var text: String
 }
 
@@ -18,7 +18,7 @@ struct TaskDate: Hashable {
 }
 
 struct TaskItem: Identifiable, Hashable {
-    var id = UUID()
+    var id = UUID().uuidString
     var title: String = ""
     var description: String = ""
     var category: String = ""

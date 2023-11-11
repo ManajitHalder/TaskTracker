@@ -8,7 +8,7 @@ import Foundation
 import Combine
 
 final class TaskManager {
-    func getAllTasks() -> [TaskItem] {
+    func fetchAllTasks() -> [TaskItem] {
         [
             TaskItem(title: "Task 1", description: "Start your first project Task Trakcer to track daily tasks", category: "Personal", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finishDate: "")),
             TaskItem(title: "Task 5", description: "", category: "Work", priority: "High", status: "Not Started", taskDate: TaskDate(startDate: "", dueDate: DateUtils.dateToString(Date()), finishDate: "")),
@@ -35,7 +35,7 @@ final class TaskMainViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     func loadTasks() {
-        allTasks = taskManager.getAllTasks()
+        allTasks = taskManager.fetchAllTasks()
     }
     
     

@@ -87,6 +87,7 @@
 				C40B5FFA2AD475D200E0B5F1 /* Model */,
 				C4DC8C102AD588A400EF3A7F /* ViewModel */,
 				C4DC8C0F2AD5885A00EF3A7F /* View */,
+				C4B466292AFF458D00D39DF7 /* RestAPI */,
 				C4D241EC2AF7FC0C004A059D /* Notification */,
 				C4A508332AEF671200AD5C12 /* Utilities */,
 				C40B5FEF2AD46BE800E0B5F1 /* Assets.xcassets */,
@@ -118,6 +119,13 @@
 				C4A508342AEF673600AD5C12 /* DateUtilities.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		C4B466292AFF458D00D39DF7 /* RestAPI */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = RestAPI;
 			sourceTree = "<group>";
 		};
 		C4D241EC2AF7FC0C004A059D /* Notification */ = {
